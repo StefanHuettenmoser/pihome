@@ -11,7 +11,7 @@
 	"db": {
 		"host": "localhost",
 		"database": "pihome",
-		"username": "root",
+		"user": "root",
 		"password": "password"
 	}
 }

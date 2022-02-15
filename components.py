@@ -6,12 +6,15 @@ import inspect
 import os
 import pkgutil
 
+import database
+
 
 class PihomeComponent:
-    def __init__(self, name):
+    def __init__(self, db: database.Database, name):
+        self.db = db
         self.name = name
 
-    def run(self, _db):
+    def run(self):
         raise NotImplementedError
 
 
@@ -21,10 +24,10 @@ class ComponentFactory:
         self.component_layout_package = component_layout_package
         self.load_component_layouts()
 
-    def build_component(self, name, configuration) -> PihomeComponent:
-        return self.component_layouts[configuration["component_layout"]](
-            name, **configuration["args"]
-        )
+    def build_component(self, db, name, configuration) -> PihomeComponent:
+        return self.component_layouts[
+            self.component_layout_package + "." + configuration["component_layout"]
+        ](db, name, **configuration["args"])
 
     def load_component_layouts(self):
         self.component_layouts = {}
@@ -43,8 +46,9 @@ class ComponentFactory:
                 clsmembers = inspect.getmembers(plugin_module, inspect.isclass)
                 for (_, c) in clsmembers:
                     if issubclass(c, PihomeComponent) & (c is not PihomeComponent):
-                        logger.debug(f"Load Plugin: {c.__module__}.{c.__name__}")
-                        self.plugins[c.__name__] = c
+                        plugin_name = f"{c.__module__}.{c.__name__}"
+                        logger.debug(f"Load Plugin: {plugin_name}")
+                        self.component_layouts[plugin_name] = c
 
         # RECURSIVELY LOAD FROM NESTED DIRECTORIES
         all_current_paths = []

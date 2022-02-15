@@ -42,22 +42,21 @@ def main():
 
     # LOAD COMPONENTS FROM CONFIG USING PLUGINS
     components = []
-    for component_configuration in pihome_configuration["components"]:
+    for component_name in pihome_configuration["components"]:
         component = component_factory.build_component(
-            component_configuration,
-            pihome_configuration["components"][component_configuration],
+            db,
+            component_name,
+            pihome_configuration["components"][component_name],
         )
         components.append(component)
 
     # RUN COMPONENTS (TODO: IN SORTABLE ORDER (STACKED...))
     for component in components:
         try:
-            response = component.run(db)
-            logger.debug(response)
+            response = component.run()
+            logger.debug(f"{component.name}: \t{response}")
         except Exception as e:
-            logger.warning(
-                f"Execution of {component_configuration} failed ({type(e).__name__})"
-            )
+            logger.warning(f"Execution of {component.name} failed ({type(e).__name__})")
             logger.debug(e)
 
 
