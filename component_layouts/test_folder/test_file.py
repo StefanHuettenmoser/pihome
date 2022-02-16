@@ -13,5 +13,5 @@ class Test(PihomeComponent):
 
     def run(self):
         self.db.add_one(self.name, self.arg1)
-        [print(x) for x in self.db.get_last(self.name)]
+        print(self.db.get_last(self.name))
         return f"{self.name} <TEST>: {self.db} {self.arg1} {self.arg2}"
