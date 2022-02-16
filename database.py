@@ -21,8 +21,9 @@ class Database:
         return self._execute(sql)
 
     def get_last(self, table):
-        sql = f"SELECT * FROM {table} LIMIT 1"
-        return self._execute(sql)
+        sql = f"SELECT * FROM {table} ORDER BY id DESC LIMIT 1"
+        res = self._execute(sql)[0]
+        return {TIME: res[1], VALUE: res[2]}
 
     def add_one(self, table, value):
         time = datetime.now()
