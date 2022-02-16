@@ -4,7 +4,8 @@ import pathlib
 
 here = pathlib.Path(__file__).parent.resolve()
 
-requirements = [x
+requirements = [
+    x
     for x in (here / "requirements.txt").read_text(encoding="utf-8").split("\n")
     if len(x) > 0
 ]
@@ -23,5 +24,5 @@ setup(
     author_email="stefan.huettenmoser@gmail.com",
     classifiers=["Development Status :: 3 - Alpha"],
     python_requires=">=3.8",
-    install_requires = requirements
+    install_requires=requirements,
 )
