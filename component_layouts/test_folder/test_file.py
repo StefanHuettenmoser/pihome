@@ -11,6 +11,7 @@ class Test(PihomeComponent):
 
         self.db.init_table(self.name, self.value_type)
 
-    def run(self):
+    def run(self, callback):
         self.db.add_one(self.name, self.arg1)
+        callback()
         return f"{self.name} <TEST>: {self.db} {self.arg1} {self.arg2}"

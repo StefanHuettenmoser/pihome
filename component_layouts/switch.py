@@ -19,14 +19,16 @@ class Switch(PihomeComponent):
         process = subprocess.Popen(command.split(), stdout=subprocess.PIPE)
         return process.communicate()
 
-    def run(self):
+    def run(self, callback):
         self._execute(f"pigs w {self.input_pin} {1 if self.state else 0}")
         if self.timeout:
-            timer = threading.Timer(
-                self.timeout,
-                lambda: self._execute(
-                    f"pigs w {self.input_pin} {0 if self.state else 1}"
-                ),
-            )
+
+            def revert():
+                self._execute(f"pigs w {self.input_pin} {0 if self.state else 1}")
+                callback()
+
+            timer = threading.Timer(self.timeout, revert)
             timer.start()
+        else:
+            callback()
         return f"Switch Pin-{self.input_pin} {'on' if self.state else 'off'}{f' for {self.timeout} seconds' if self.timeout else ''}"

@@ -18,7 +18,7 @@ class PihomeComponent:
         self.name = name
         self.stage = stage
 
-    def run(self):
+    def run(self, callback):
         raise NotImplementedError
 
 

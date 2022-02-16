@@ -13,7 +13,8 @@ class Input(PihomeComponent):
 
         self.pi.set_mode(self.output_pin, pigpio.INPUT)
 
-    def run(self):
+    def run(self, callback):
         value = self.pi.read(self.output_pin)
         self.db.add_one(self.name, value)
+        callback()
         return f"Read form Pin-{self.output_pin}: {value} and Save to Database '{self.name}'"
