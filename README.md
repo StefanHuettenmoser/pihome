@@ -13,5 +13,6 @@
 
 ## dependencies:
 
-- python 3
-- mysql
+- python3
+- pigpio (running)
+- mysql (running)
