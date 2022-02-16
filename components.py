@@ -2,6 +2,7 @@ import logging
 
 logger = logging.getLogger(__name__)
 
+import pigpio
 import inspect
 import os
 import pkgutil
@@ -10,7 +11,8 @@ import database
 
 
 class PihomeComponent:
-    def __init__(self, db: database.Database, name):
+    def __init__(self, pi: pigpio.pi, db: database.Database, name):
+        self.pi = pi
         self.db = db
         self.name = name
 
@@ -24,10 +26,10 @@ class ComponentFactory:
         self.component_layout_package = component_layout_package
         self.load_component_layouts()
 
-    def build_component(self, db, name, configuration) -> PihomeComponent:
+    def build_component(self, pi, db, name, configuration) -> PihomeComponent:
         return self.component_layouts[
             self.component_layout_package + "." + configuration["component_layout"]
-        ](db, name, **configuration["args"])
+        ](pi, db, name, **configuration["args"])
 
     def load_component_layouts(self):
         self.component_layouts = {}

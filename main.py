@@ -2,6 +2,7 @@ import logging
 
 logger = logging.getLogger(__name__)
 
+import pigpio
 import argparse
 import os
 import json
@@ -37,6 +38,9 @@ def main():
         pihome_configuration["db"]["password"],
     )
 
+    # CREATE PI GPIO INSTANCE
+    pi = pigpio.pi()
+
     # PLUGIN LOADER
     component_factory = ComponentFactory("component_layouts")
 
@@ -44,6 +48,7 @@ def main():
     components = []
     for component_name in pihome_configuration["components"]:
         component = component_factory.build_component(
+            pi,
             db,
             component_name,
             pihome_configuration["components"][component_name],
@@ -58,6 +63,8 @@ def main():
         except Exception as e:
             logger.warning(f"Execution of {component.name} failed ({type(e).__name__})")
             logger.debug(e)
+
+    pi.stop()
 
 
 if __name__ == "__main__":

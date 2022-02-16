@@ -4,14 +4,13 @@ from components import PihomeComponent
 
 
 class Input(PihomeComponent):
-    def __init__(self, db, name, output_pin, value_type):
-        super().__init__(db, name)
+    def __init__(self, pi, db, name, output_pin, value_type):
+        super().__init__(pi, db, name)
 
         self.output_pin = output_pin
         self.value_type = value_type
         self.db.init_table(self.name, self.value_type)
 
-        self.pi = pigpio.pi()
         self.pi.set_mode(self.output_pin, pigpio.INPUT)
 
     def run(self):
