@@ -4,8 +4,8 @@ from components import PihomeComponent
 
 
 class Input(PihomeComponent):
-    def __init__(self, pi, db, name, output_pin, value_type):
-        super().__init__(pi, db, name)
+    def __init__(self, pi, db, name, stage, output_pin, value_type):
+        super().__init__(pi, db, name, stage)
 
         self.output_pin = output_pin
         self.value_type = value_type

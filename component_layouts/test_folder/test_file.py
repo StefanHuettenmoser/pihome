@@ -2,8 +2,8 @@ from components import PihomeComponent
 
 
 class Test(PihomeComponent):
-    def __init__(self, pi, db, name, value_type, arg1, arg2):
-        super().__init__(pi, db, name)
+    def __init__(self, pi, db, name, stage, value_type, arg1, arg2):
+        super().__init__(pi, db, name, stage)
 
         self.value_type = value_type
         self.arg1 = arg1

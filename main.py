@@ -8,7 +8,7 @@ import os
 import json
 
 from log.logger import BaseLogger
-from components import ComponentFactory
+from components import ComponentsHandler
 from database import Database
 
 parser = argparse.ArgumentParser(description="Get Data and Upload to Pi Home Database")
@@ -41,28 +41,9 @@ def main():
     # CREATE PI GPIO INSTANCE
     pi = pigpio.pi()
 
-    # PLUGIN LOADER
-    component_factory = ComponentFactory("component_layouts")
-
-    # LOAD COMPONENTS FROM CONFIG USING PLUGINS
-    components = []
-    for component_name in pihome_configuration["components"]:
-        component = component_factory.build_component(
-            pi,
-            db,
-            component_name,
-            pihome_configuration["components"][component_name],
-        )
-        components.append(component)
-
-    # RUN COMPONENTS (TODO: IN SORTABLE ORDER (STACKED...))
-    for component in components:
-        try:
-            response = component.run()
-            logger.debug(f"{component.name}: \t{response}")
-        except Exception as e:
-            logger.warning(f"Execution of {component.name} failed ({type(e).__name__})")
-            logger.debug(e)
+    # CREATE COMPONENT HANDLER
+    handler = ComponentsHandler(pihome_configuration, pi, db)
+    handler.run()
 
     pi.stop()
 

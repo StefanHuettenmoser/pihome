@@ -6,8 +6,8 @@ from components import PihomeComponent
 
 
 class Switch(PihomeComponent):
-    def __init__(self, pi, db, name, input_pin, state=0, timeout=0):
-        super().__init__(pi, db, name)
+    def __init__(self, pi, db, name, stage, input_pin, state=0, timeout=0):
+        super().__init__(pi, db, name, stage)
 
         self.input_pin = input_pin
         self.state = state
