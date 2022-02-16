@@ -2,7 +2,6 @@ import logging
 
 logger = logging.getLogger(__name__)
 
-import multiprocessing
 import time
 import pigpio
 import inspect
@@ -78,6 +77,9 @@ class ComponentFactory:
 
 class ComponentsHandler:
     def __init__(self, config, pi, db):
+        # INITIALIZE WAIT FOR COMPONENTS
+        self.wait_for_components = 0
+
         # PLUGIN LOADER
         component_factory = ComponentFactory("component_layouts")
 
@@ -95,28 +97,33 @@ class ComponentsHandler:
 
             self.components_by_stage[component.stage].append(component)
 
-    def run(self):
+    def run(self, timeout=30, poll_interval=0.25):
         # RUN COMPONENTS
         stages = list(self.components_by_stage)
         stages.sort()
 
-        # FOR EVERY STAGE
         for stage in stages:
-            logger.debug(f"Run Stage {stage}")
             components = self.components_by_stage[stage]
-            start_time = time.time()
+            self.wait_for_components = len(components)
+            must_end = time.time() + timeout
 
-            def run_component(component):
-                component.run()
-                return component
+            def component_finished():
+                self.wait_for_components -= 1
 
-            def get_runtime_ms():
-                return 1000 * int(time.time() - start_time)
-
-            p = multiprocessing.Pool()
-            for component in p.imap_unordered(run_component, components):
-                logger.debug(
-                    f"\t[{stage}] {component.name} Finished ({get_runtime_ms()}ms)"
+            for component in components:
+                try:
+                    response = component.run(component_finished)
+                    logger.debug(f"{component.name}: \t{response}")
+                except Exception as e:
+                    component_finished()
+                    logger.warning(
+                        f"Execution of {component.name} failed ({type(e).__name__})"
+                    )
+                    logger.debug(e)
+            while time.time() < must_end and self.wait_for_components:
+                time.sleep(poll_interval)
+            if self.wait_for_components:
+                logger.error(
+                    f"ERROR: Stage {stage} Timed Out after {timeout} seconds. {self.wait_for_components} Tasks left."
                 )
-
-            logger.debug(f"Stage {stage} Finished ({get_runtime_ms()}ms)")
+                raise TimeoutError()
