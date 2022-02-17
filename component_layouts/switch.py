@@ -66,7 +66,7 @@ class Logic:
 
 class LogicSwitch(Switch):
     def __init__(
-        self, pi, db, name, stage, input_pin, reference_table, logic_json, timeout=0
+        self, pi, db, name, stage, input_pin, reference_table, logic_json={}, timeout=0
     ):
         state = Logic(logic_json).get_state(db, reference_table)
         super().__init__(pi, db, name, stage, input_pin, state, timeout)
