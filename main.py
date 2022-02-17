@@ -27,7 +27,7 @@ def main():
     BaseLogger(logger_conf_file)
 
     # LOAD CONFIGURATION
-    with open("./config/pihome.config") as f:
+    with open("./config/pihome.json") as f:
         config = json.load(f)
 
     # CREATE DATABASE CONNECTION

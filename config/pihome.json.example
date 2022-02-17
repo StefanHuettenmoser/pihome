@@ -1,0 +1,47 @@
+{
+	"actors": {
+		"LED_Test_1": {
+			"module": "physical.output.LogicOutput",
+			"stage": 1,
+			"args": {
+				"input_pin": 18,
+				"reference_table": "Radar"
+			}
+		},
+		"LED_Test_2": {
+			"module": "physical.output.LogicOutput",
+			"stage": 1,
+			"args": {
+				"input_pin": 23,
+				"reference_table": "Potentiometer",
+				"logic_json": {
+					"threshold": 0.5
+				}
+			}
+		},
+		"Radar": {
+			"module": "physical.sensor.Sensor",
+			"stage": 0,
+			"args": {
+				"output_pin": 5,
+				"value_type": "INT"
+			}
+		},
+		"Potentiometer": {
+			"module": "physical.sensor.AnalogSensor",
+			"stage": 0,
+			"args": {
+				"output_pin": 20,
+				"discharge_pin": 26,
+				"min_value": 0.0011,
+				"max_value": 0.012
+			}
+		}
+	},
+	"db": {
+		"host": "localhost",
+		"database": "pihome",
+		"user": "root",
+		"password": "password"
+	}
+}

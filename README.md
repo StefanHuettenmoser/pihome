@@ -12,9 +12,9 @@ Different modules like sensors, scrappers and outputs (like LEDs or LCDs) can be
    `python setup.py install`
 
 2. set up the configuration
-   `cp config/pihome.config.template config/pihome.config`
+   `cp config/pihome.json.example config/pihome.json`
 
-3. execute python script to run according to the configuration in the pihome.config file
+3. execute python script to run according to the configuration in the pihome.json file
    `python main.py`
 
 4. write custom modules and save them to the module folder to access them from the configuration
