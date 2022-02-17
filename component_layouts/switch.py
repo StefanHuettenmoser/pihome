@@ -3,6 +3,7 @@ from time import sleep
 import threading
 
 from components import PihomeComponent
+from database import Database, VALUE
 
 
 class Switch(PihomeComponent):
@@ -32,3 +33,40 @@ class Switch(PihomeComponent):
         else:
             callback()
         return f"Switch Pin-{self.input_pin} {'on' if self.state else 'off'}{f' for {self.timeout} seconds' if self.timeout else ''}"
+
+
+class Logic:
+    def __init__(self, logic_json):
+
+        self.n = Logic.load_key(logic_json, "n", 1)
+        self.threshold = Logic.load_key(logic_json, "threshold", 0)
+        self.invert = Logic.load_key(logic_json, "invert", False)
+
+    def get_state(
+        self,
+        db: Database,
+        reference_table: str,
+    ):
+        # load data
+        reference_data = db.get_last(reference_table, n=self.n)
+        # get avg of data
+        avg_value = sum(x[VALUE] for x in reference_data) / len(reference_data)
+        # compare to threshold
+        state = avg_value > self.threshold
+        # invert (if self.invert)
+        return not state if self.invert else state
+
+    @staticmethod
+    def load_key(json, key, default):
+        try:
+            return json[key]
+        except KeyError:
+            return default
+
+
+class LogicSwitch(Switch):
+    def __init__(
+        self, pi, db, name, stage, input_pin, reference_table, logic_json, timeout=0
+    ):
+        state = Logic(logic_json).get_state(db, reference_table)
+        super().__init__(pi, db, name, stage, input_pin, state, timeout)
