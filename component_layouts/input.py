@@ -64,7 +64,7 @@ class AnalogInput(Input):
         self.pi.set_mode(self.output_pin, pigpio.OUTPUT)
         self.pi.set_mode(self.discharge_pin, pigpio.INPUT)
         counter = 0
-        self.pi.write(self.output_pin)
+        self.pi.write(self.output_pin, 1)
         while not self.pi.read(self.discharge_pin):
             counter += 1
             time.sleep(0.0001)
