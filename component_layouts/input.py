@@ -41,6 +41,7 @@ class AnalogInput(Input):
         skip_measurements=5,
         measurements=10,
         wait_after_discharge=0.02,
+        timeout=2,
     ):
         super().__init__(pi, db, name, stage, output_pin, value_type="DECIMAL")
 
@@ -53,6 +54,7 @@ class AnalogInput(Input):
         self.skip_measurements = skip_measurements
         self.measurements = measurements
         self.wait_after_discharge = wait_after_discharge
+        self.timeout = timeout
 
     def discharge(self):
         self.pi.set_mode(self.output_pin, pigpio.INPUT)
@@ -65,7 +67,8 @@ class AnalogInput(Input):
         self.pi.set_mode(self.discharge_pin, pigpio.INPUT)
         counter = 0
         self.pi.write(self.output_pin, 1)
-        while not self.pi.read(self.discharge_pin):
+        must_end = time.time() + self.timeout
+        while not self.pi.read(self.discharge_pin) and time.time() < must_end:
             counter += 1
             time.sleep(0.0001)
         if self.log_result:
