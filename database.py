@@ -1,6 +1,7 @@
 import mysql.connector
 from datetime import datetime
 
+ID = "id"
 TIME = "Time"
 VALUE = "Value"
 
@@ -21,9 +22,9 @@ class Database:
         return self._execute(sql)
 
     def get_last(self, table, n=1):
-        sql = f"SELECT * FROM {table} ORDER BY id DESC LIMIT {n}"
-        res = self._execute(sql)
-        return {TIME: res[1], VALUE: res[2]}
+        sql = f"SELECT * FROM {table} ORDER BY {ID} DESC LIMIT {n}"
+        values = self._execute(sql)
+        return self.__parse(values)
 
     def add_one(self, table, value):
         time = datetime.now()
@@ -38,10 +39,10 @@ class Database:
     def init_table(self, table, value_type):
         sql = f"""
         CREATE TABLE if not exists {table} (
-            id int NOT NULL AUTO_INCREMENT, 
+            {ID} int NOT NULL AUTO_INCREMENT, 
             {TIME} DATETIME NOT NULL, 
             {VALUE} {value_type} NOT NULL, 
-            PRIMARY KEY (id) 
+            PRIMARY KEY ({ID}) 
         )
         """
         self._execute(sql)
@@ -50,6 +51,10 @@ class Database:
         with self.conn.cursor() as cursor:
             cursor.execute(sql)
             return cursor.fetchall()
+
+    @staticmethod
+    def __parse(values):
+        return [{ID: value[0], TIME: value[1], VALUE: value[2]} for value in values]
 
     @staticmethod
     def create_database(host, database, user, password):
