@@ -29,6 +29,7 @@ class ComponentFactory:
         self.load_component_layouts()
 
     def build_component(self, pi, db, name, config) -> PihomeComponent:
+        logger.debug(f"Build Component {name} [{config['component_layout']}]")
         return self.component_layouts[
             self.component_layout_package + "." + config["component_layout"]
         ](pi, db, name, config["stage"], **config["args"])
