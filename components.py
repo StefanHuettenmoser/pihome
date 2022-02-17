@@ -104,6 +104,7 @@ class ComponentsHandler:
         stages.sort()
 
         for stage in stages:
+            logger.debug(f"Run Stage {stage}")
             components = self.components_by_stage[stage]
             self.wait_for_components = len(components)
             must_end = time.time() + timeout
@@ -112,15 +113,9 @@ class ComponentsHandler:
                 self.wait_for_components -= 1
 
             for component in components:
-                try:
-                    response = component.run(component_finished)
-                    logger.debug(f"{component.name}: \t{response}")
-                except Exception as e:
-                    component_finished()
-                    logger.warning(
-                        f"Execution of {component.name} failed ({type(e).__name__})"
-                    )
-                    logger.debug(e)
+                response = component.run(component_finished)
+                logger.debug(f"[{stage}] {component.name}: {response}")
+
             while time.time() < must_end and self.wait_for_components:
                 time.sleep(poll_interval)
             if self.wait_for_components:
@@ -128,3 +123,4 @@ class ComponentsHandler:
                     f"ERROR: Stage {stage} Timed Out after {timeout} seconds. {self.wait_for_components} Tasks left."
                 )
                 raise TimeoutError()
+            logger.debug(f"Stage {stage} Completed")
