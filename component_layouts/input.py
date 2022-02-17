@@ -42,6 +42,7 @@ class AnalogInput(Input):
         measurements=10,
         wait_after_discharge=0.02,
         timeout=2,
+        measurement_tick=0.0001,
     ):
         super().__init__(pi, db, name, stage, output_pin, value_type="DECIMAL")
 
@@ -65,15 +66,17 @@ class AnalogInput(Input):
     def measure_charge_time(self):
         self.pi.set_mode(self.output_pin, pigpio.OUTPUT)
         self.pi.set_mode(self.discharge_pin, pigpio.INPUT)
-        counter = 0
         self.pi.write(self.output_pin, 1)
-        must_end = time.time() + self.timeout
+
+        start_time = time.time()
+        must_end = start_time + self.timeout
         while not self.pi.read(self.discharge_pin) and time.time() < must_end:
-            counter += 1
-            time.sleep(0.0001)
+            time.sleep(self.measurement_tick)
+        delta_time = time.time() - start_time()
+
         if self.log_result:
-            counter = math.log(counter)
-        return max(0, min(1, (counter - self.min_value) / (self.value_range)))
+            delta_time = math.log(delta_time)
+        return max(0, min(1, (delta_time - self.min_value) / (self.value_range)))
 
     def __read(self):
         self.discharge()
