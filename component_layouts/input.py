@@ -71,7 +71,7 @@ class AnalogInput(Input):
         start_time = time.time()
         must_end = start_time + self.timeout
         while not self.pi.read(self.discharge_pin) and time.time() < must_end:
-            time.sleep(self.measurement_tick)
+            time.sleep(0.0001)
         delta_time = time.time() - start_time()
 
         if self.log_result:
