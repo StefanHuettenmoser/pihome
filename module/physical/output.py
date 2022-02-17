@@ -2,11 +2,11 @@ import subprocess
 from time import sleep
 import threading
 
-from components import PihomeComponent
+from modules import PihomeActor
 from database import Database, VALUE
 
 
-class Switch(PihomeComponent):
+class Output(PihomeActor):
     def __init__(self, pi, db, name, stage, input_pin, state=0, timeout=0):
         super().__init__(pi, db, name, stage)
 
@@ -20,7 +20,7 @@ class Switch(PihomeComponent):
         process = subprocess.Popen(command.split(), stdout=subprocess.PIPE)
         return process.communicate()
 
-    def run(self, callback):
+    def perform(self, callback):
         self._execute(f"pigs w {self.input_pin} {1 if self.state else 0}")
         if self.timeout:
 
@@ -64,7 +64,7 @@ class Logic:
             return default
 
 
-class LogicSwitch(Switch):
+class LogicOutput(Output):
     def __init__(
         self, pi, db, name, stage, input_pin, reference_table, logic_json={}, timeout=0
     ):
@@ -72,6 +72,6 @@ class LogicSwitch(Switch):
         self.logic_json = logic_json
         self.reference_table = reference_table
 
-    def run(self, callback):
+    def perform(self, callback):
         self.state = Logic(self.logic_json).get_state(self.db, self.reference_table)
-        return super().run(callback)
+        return super().perform(callback)

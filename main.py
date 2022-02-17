@@ -8,7 +8,7 @@ import os
 import json
 
 from log.logger import BaseLogger
-from components import ComponentsHandler
+from modules import ActorStager
 from database import Database
 
 parser = argparse.ArgumentParser(description="Get Data and Upload to Pi Home Database")
@@ -19,31 +19,31 @@ args = parser.parse_args()
 
 
 def main():
-    # LOGGER
+    # INITIALIZE LOGGER
     file_dir = os.path.split(os.path.realpath(__file__))[0]
-    conf_file = os.path.join(
+    logger_conf_file = os.path.join(
         file_dir, "log/logging_v.conf" if args.verbose else "log/logging.conf"
     )
-    BaseLogger(conf_file=conf_file)
+    BaseLogger(logger_conf_file)
 
     # LOAD CONFIGURATION
     with open("./config/pihome.config") as f:
-        pihome_configuration = json.load(f)
+        config = json.load(f)
 
     # CREATE DATABASE CONNECTION
     db = Database(
-        pihome_configuration["db"]["host"],
-        pihome_configuration["db"]["database"],
-        pihome_configuration["db"]["user"],
-        pihome_configuration["db"]["password"],
+        config["db"]["host"],
+        config["db"]["database"],
+        config["db"]["user"],
+        config["db"]["password"],
     )
 
     # CREATE PI GPIO INSTANCE
     pi = pigpio.pi()
 
-    # CREATE COMPONENT HANDLER
-    handler = ComponentsHandler(pihome_configuration, pi, db)
-    handler.run()
+    # CREATE ACTOR STAGER
+    actor_stager = ActorStager(config, pi, db)
+    actor_stager.perform()
 
     pi.stop()
 

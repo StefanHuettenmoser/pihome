@@ -1,7 +1,7 @@
-from components import PihomeComponent
+from modules import PihomeActor
 
 
-class Test(PihomeComponent):
+class Test(PihomeActor):
     def __init__(self, pi, db, name, stage, value_type, arg1, arg2):
         super().__init__(pi, db, name, stage)
 
@@ -11,7 +11,7 @@ class Test(PihomeComponent):
 
         self.db.init_table(self.name, self.value_type)
 
-    def run(self, callback):
+    def perform(self, callback):
         self.db.add_one(self.name, self.arg1)
         callback()
         return f"{self.name} <TEST>: {self.db} {self.arg1} {self.arg2}"

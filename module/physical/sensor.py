@@ -1,13 +1,12 @@
-from unittest import skip
 import pigpio
 
 import time
 import math
 
-from components import PihomeComponent
+from modules import PihomeActor
 
 
-class Input(PihomeComponent):
+class Sensor(PihomeActor):
     def __init__(self, pi, db, name, stage, output_pin, value_type):
         super().__init__(pi, db, name, stage)
 
@@ -19,14 +18,14 @@ class Input(PihomeComponent):
         self.pi.set_mode(self.output_pin, pigpio.INPUT)
         return self.pi.read(self.output_pin)
 
-    def run(self, callback):
+    def perform(self, callback):
         value = self.read()
         self.db.add_one(self.name, value)
         callback()
         return f"Read form Pin-{self.output_pin}: {value} and Save to Database '{self.name}'"
 
 
-class AnalogInput(Input):
+class AnalogSensor(Sensor):
     def __init__(
         self,
         pi,
@@ -46,7 +45,7 @@ class AnalogInput(Input):
     ):
         super().__init__(pi, db, name, stage, output_pin, value_type="DECIMAL")
 
-        self.discharge_pin = discharge_pin
+        self.discharge_pin = discharge_pin  # b_pin (inner pin)
 
         self.min_value = min_value
         self.value_range = max_value - min_value
