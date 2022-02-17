@@ -20,9 +20,9 @@ class Database:
         sql = f"SELECT * FROM {table}"
         return self._execute(sql)
 
-    def get_last(self, table):
-        sql = f"SELECT * FROM {table} ORDER BY id DESC LIMIT 1"
-        res = self._execute(sql)[0]
+    def get_last(self, table, n=1):
+        sql = f"SELECT * FROM {table} ORDER BY id DESC LIMIT {n}"
+        res = self._execute(sql)
         return {TIME: res[1], VALUE: res[2]}
 
     def add_one(self, table, value):
