@@ -74,4 +74,4 @@ class LogicSwitch(Switch):
 
     def run(self, callback):
         self.state = Logic(self.logic_json).get_state(self.db, self.reference_table)
-        super().run(callback)
+        return super().run(callback)
