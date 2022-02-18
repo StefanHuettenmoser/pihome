@@ -1,3 +1,6 @@
+import logging
+
+logger = logging.getLogger(__name__)
 import pigpio
 
 import time
@@ -69,8 +72,12 @@ class AnalogSensor(Sensor):
 
         start_time = time.time()
         must_end = start_time + self.timeout
-        while not self.pi.read(self.discharge_pin) and time.time() < must_end:
+        while not self.pi.read(self.discharge_pin):
             time.sleep(0.0001)
+            if time.time() >= must_end:
+                raise TimeoutError(
+                    f"Measurement of {self.name} timed out after {self.timeout}s"
+                )
         delta_time = time.time() - start_time
 
         if self.log_result:

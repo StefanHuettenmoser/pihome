@@ -19,7 +19,7 @@ class PihomeActor:
         self.stage = stage
 
     def perform(self, callback):
-        raise NotImplementedError
+        raise NotImplementedError(f"Actor has no performance")
 
 
 class ActorFactory:
@@ -123,8 +123,7 @@ class ActorStager:
             while time.time() < must_end and self.wait_for_actors:
                 time.sleep(poll_interval)
             if self.wait_for_actors:
-                logger.error(
-                    f"ERROR: Stage {stage} Timed Out after {timeout} seconds. {self.wait_for_actors} Tasks left."
+                raise TimeoutError(
+                    f"Stage {stage} timed out after {timeout} seconds. {self.wait_for_actors} Tasks unfinished."
                 )
-                raise TimeoutError()
             logger.debug(f"Close Stage {stage}")
