@@ -65,7 +65,7 @@ class BasicList:
             list_entry_lines = self.__split_lines(
                 list_entry, self.font_text, self.w - self.PADDING[0] - self.PADDING[2]
             )
-            print(list_entry_lines)
+            # print(list_entry_lines)
 
             # if screen has space left:
             line_height = self.font_text.getsize(list_entry)[1]
