@@ -3,7 +3,7 @@ from time import sleep
 import threading
 
 from modules import PihomeActor
-from database import Database, VALUE
+from database import Logic
 
 
 class Output(PihomeActor):
@@ -11,7 +11,7 @@ class Output(PihomeActor):
         super().__init__(pi, db, name, stage)
 
         self.input_pin = input_pin
-        self.state = state
+        self.state_logic = Logic(state)
         self.timeout = timeout
 
         self._execute(f"pigs modes {self.input_pin} w")
@@ -21,57 +21,46 @@ class Output(PihomeActor):
         return process.communicate()
 
     def perform(self, callback):
-        self._execute(f"pigs w {self.input_pin} {1 if self.state else 0}")
+        state = self.state_logic.get_value(self.db)
+        self._execute(f"pigs w {self.input_pin} {1 if state else 0}")
         if self.timeout:
 
             def revert():
-                self._execute(f"pigs w {self.input_pin} {0 if self.state else 1}")
+                self._execute(f"pigs w {self.input_pin} {0 if state else 1}")
                 callback()
 
             timer = threading.Timer(self.timeout, revert)
             timer.start()
         else:
             callback()
-        return f"Switch Pin-{self.input_pin} {'on' if self.state else 'off'}{f' for {self.timeout} seconds' if self.timeout else ''}"
+        return f"Switch Pin-{self.input_pin} {'on' if state else 'off'}{f' for {self.timeout} seconds' if self.timeout else ''}"
 
 
-class Logic:
-    def __init__(self, logic_json):
-
-        self.n = Logic.load_key(logic_json, "n", 1)
-        self.threshold = Logic.load_key(logic_json, "threshold", 0)
-        self.invert = Logic.load_key(logic_json, "invert", False)
-
-    def get_state(
-        self,
-        db: Database,
-        reference_table: str,
-    ):
-        # load data
-        reference_data = db.get_last(reference_table, n=self.n)
-        # get avg of data
-        avg_value = sum(x[VALUE] for x in reference_data) / len(reference_data)
-        # compare to threshold
-        state = avg_value > self.threshold
-        # invert (if self.invert)
-        return not state if self.invert else state
-
-    @staticmethod
-    def load_key(json, key, default):
-        try:
-            return json[key]
-        except KeyError:
-            return default
-
-
-class LogicOutput(Output):
+class PWMOutput(PihomeActor):
     def __init__(
-        self, pi, db, name, stage, input_pin, reference_table, logic_json={}, timeout=0
+        self,
+        pi,
+        db,
+        name,
+        stage,
+        input_pin,
+        frequency,
+        duty_cycle=0.5,
+        hardware_PWM=False,
     ):
-        super().__init__(pi, db, name, stage, input_pin, state=0, timeout=timeout)
-        self.logic_json = logic_json
-        self.reference_table = reference_table
+        super().__init__(pi, db, name, stage)
+        self.input_pin = input_pin
+        self.frequency_logic = Logic(frequency)
+        self.duty_cycle_logic = Logic(duty_cycle)
+        self.hardware_PWM = hardware_PWM
 
     def perform(self, callback):
-        self.state = Logic(self.logic_json).get_state(self.db, self.reference_table)
-        return super().perform(callback)
+        frequency = self.frequency_logic.get_value()
+        duty_cycle = self.duty_cycle_logic.get_value()
+        if self.hardware_PWM:
+            self.pi.hardware_PWM(self.input_pin, frequency, int(1_000_000 * duty_cycle))
+        else:
+            self.pi.set_PWM_frequency(self.input_pin, frequency)
+            self.pi.set_PWM_dutycycle(self.input_pin, int(duty_cycle * 255))
+
+        callback()

@@ -5,7 +5,14 @@
 			"stage": 1,
 			"args": {
 				"input_pin": 18,
-				"reference_table": "Radar"
+				"value": {
+					"static_value": 0,
+					"operation": {
+						"ADD": {
+							"reference_table": "Radar"
+						}
+					}
+				}
 			}
 		},
 		"LED_Test_2": {
@@ -13,9 +20,12 @@
 			"stage": 1,
 			"args": {
 				"input_pin": 23,
-				"reference_table": "Potentiometer",
-				"logic_json": {
-					"threshold": 0.5
+				"value": {
+					"operation": {
+						"CEIL": {
+							"reference_table": "Potentiometer"
+						}
+					}
 				}
 			}
 		},
