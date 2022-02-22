@@ -185,7 +185,7 @@ class TimeFrame:
 
     def __get_value(self, db: Database, reference_table):
         if self.is_n_time_frame:
-            return db.get_last(reference_table, n=self.time_frame)
+            return [x[VALUE] for x in db.get_last(reference_table, n=self.time_frame)]
         raise NotImplementedError("Provide a n value")
         # TODO:
         # get time_stamp_a OR offset_from_now
