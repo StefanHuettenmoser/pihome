@@ -40,14 +40,22 @@ class ActorFactory:
         self.find_modules(self.module_dir)
 
     def find_modules(self, module_dir):
-        imported_modules = __import__(module_dir, fromlist=[""])
+        try:
+            imported_modules = __import__(module_dir, fromlist=[""])
+        except:
+            logger.error(f"Could not load Module {module_dir}")
+            return
 
         # LOOK IN CURRENT DIR
         for _, module_name, is_dir in pkgutil.iter_modules(
             imported_modules.__path__, imported_modules.__name__ + "."
         ):
             if not is_dir:
-                module_package = __import__(module_name, fromlist=[""])
+                try:
+                    module_package = __import__(module_name, fromlist=[""])
+                except:
+                    logger.error(f"Could not load Module {module_name}")
+                    continue
                 module_classes = inspect.getmembers(module_package, inspect.isclass)
                 for (_, module_class) in module_classes:
                     if issubclass(module_class, PihomeActor) & (
