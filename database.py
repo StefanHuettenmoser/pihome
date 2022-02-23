@@ -1,15 +1,19 @@
 import mysql.connector
-from datetime import datetime
+from datetime import datetime, timedelta
 import math
 from inspect import signature
 
-ID = "id"
 TIME = "Time"
 VALUE = "Value"
 
 
 class Database:
-    def __init__(self, host, database, user, password):
+
+    SQL_DATE_FORMAT = "%Y-%m-%d %H:%M:%S"
+
+    def __init__(self, host, database, user, password, reset=False):
+        if reset:
+            Database.reset_database(host, database, user, password)
         # create database if it not allready exists
         Database.create_database(host, database, user, password)
 
@@ -21,42 +25,69 @@ class Database:
 
     def get_all(self, table):
         sql = f"SELECT * FROM {table}"
-        return self._execute(sql)
+        return self.___execute(sql)
 
     def get_last(self, table, n=1):
-        sql = f"SELECT * FROM {table} ORDER BY {ID} DESC LIMIT {n}"
-        values = self._execute(sql)
+        sql = f"SELECT * FROM {table} ORDER BY {TIME} DESC LIMIT {n}"
+        values = self.___execute(sql)
+        return self.__parse(values)
+
+    def get_between(self, table, start_date: datetime, end_date: datetime):
+
+        sql = f"""
+        SELECT * FROM {table}
+        WHERE {TIME} BETWEEN
+            "{start_date.strftime(self.SQL_DATE_FORMAT)}"
+            AND "{end_date.strftime(self.SQL_DATE_FORMAT)}"
+        """
+        values = self.___execute(sql)
         return self.__parse(values)
 
     def add_one(self, table, value):
-        time = datetime.now()
-        value = value if type(value) != str else f'"{value}"'
+        date = datetime.now()
         sql = f"""
         INSERT INTO {table} ({TIME}, {VALUE})
         VALUES 
-        ("{time.strftime('%Y-%m-%d %H:%M:%S')}", {value})
+        {self.__format_input(date, value)}
         """
-        self._execute(sql)
+        self.___execute(sql)
 
-    def init_table(self, table, value_type):
+    def add_many(self, table, data, replace=False):
+        SEP = ",\n"
+        sql = f"""
+        {"INSERT" if not replace else "REPLACE"} INTO {table} ({TIME}, {VALUE})
+        VALUES
+        {SEP.join(self.__format_input(x["date"], x["value"]) for x in data)}
+        """
+        self.___execute(sql)
+
+    def init_table(self, table, value_type, primary_keys=[]):
         sql = f"""
         CREATE TABLE if not exists {table} (
-            {ID} int NOT NULL AUTO_INCREMENT, 
             {TIME} DATETIME NOT NULL, 
             {VALUE} {value_type} NOT NULL, 
-            PRIMARY KEY ({ID}) 
+            PRIMARY KEY ({TIME}) 
         )
         """
-        self._execute(sql)
+        self.___execute(sql)
 
-    def _execute(self, sql):
+    def delete_table(self, table):
+        sql = f"DROP TABLE {table}"
+        self.___execute(sql)
+
+    def ___execute(self, sql):
         with self.conn.cursor() as cursor:
             cursor.execute(sql)
             return cursor.fetchall()
 
     @staticmethod
+    def __format_input(date, value):
+        value = value if type(value) != str else f'"{value}"'
+        return f'("{date.strftime(Database.SQL_DATE_FORMAT)}",{value})'
+
+    @staticmethod
     def __parse(values):
-        return [{ID: value[0], TIME: value[1], VALUE: value[2]} for value in values]
+        return [{TIME: value[0], VALUE: value[1]} for value in values]
 
     @staticmethod
     def create_database(host, database, user, password):
@@ -64,6 +95,14 @@ class Database:
         conn.autocommit = True
         with conn.cursor() as cursor:
             sql = f"CREATE DATABASE if not exists {database}"
+            cursor.execute(sql)
+
+    @staticmethod
+    def reset_database(host, database, user, password):
+        conn = mysql.connector.connect(host=host, user=user, password=password)
+        conn.autocommit = True
+        with conn.cursor() as cursor:
+            sql = f"DROP DATABASE if exists {database}"
             cursor.execute(sql)
 
 
@@ -104,6 +143,8 @@ class ListOperation(Operation):
     ]
 
     def __init__(self, operation):
+        if not type(operation) == dict:
+            operation = {operation: {}}
         super().__init__(operation)
 
     def calculate(self, value):
@@ -169,15 +210,15 @@ class TimeFrame:
     NO_FRAME = {"n": 1}
 
     def __init__(self, time_frame):
-        if len(list(time_frame)) != 1:
+        if len(list(time_frame)) == 0:
             raise ValueError(
-                f"Operation excepts exactly one Operation Type, { len(list(time_frame))} where given.\n({time_frame})"
+                f"Time Frame excepts more than one Values, { len(list(time_frame))} where given.\n({time_frame})"
             )
-        self.is_n_time_frame = list(time_frame)[0] == "n"
-        self.time_frame = next(iter(time_frame.values()))
+        self.is_n_time_frame = "n" in list(time_frame)
         self.operation = ListOperation(
             load_key(time_frame, "operation", ListOperation.AVG)
         )
+        self.time_frame = time_frame
 
     def get_value(self, db: Database, reference_table):
         # apply list operation on list-values and return
@@ -185,12 +226,23 @@ class TimeFrame:
 
     def __get_value(self, db: Database, reference_table):
         if self.is_n_time_frame:
-            return [x[VALUE] for x in db.get_last(reference_table, n=self.time_frame)]
-        raise NotImplementedError("Provide a n value")
-        # TODO:
-        # get time_stamp_a OR offset_from_now
-        # get duration OR time_stamp_b
-        # calculate start_and_end and db.get_between_time(start_and_end)
+            return [
+                x[VALUE] for x in db.get_last(reference_table, n=self.time_frame["n"])
+            ]
+
+        # get start_date OR hours_ago
+        start_date = load_key(self.time_frame, "start_date", None)
+        if start_date is None:
+            start_date = datetime.now() - timedelta(
+                hours=self.time_frame["start_X_hours_ago"]
+            )
+
+        # get end_date OR duration_h
+        end_date = load_key(self.time_frame, "end_date", None)
+        if end_date is None:
+            end_date = start_date + timedelta(hours=self.time_frame["duration_h"])
+
+        return [x[VALUE] for x in db.get_between(reference_table, start_date, end_date)]
 
 
 class Logic:

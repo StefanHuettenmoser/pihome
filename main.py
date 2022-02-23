@@ -14,6 +14,7 @@ from database import Database
 parser = argparse.ArgumentParser(description="Get Data and Upload to Pi Home Database")
 # parser.add_argument("test", type=str, metavar="T", help="I can not help you")
 parser.add_argument("-v", "--verbose", action="store_true", help="Verbose logging")
+parser.add_argument("-r", "--reset", action="store_true", help="Reset Database")
 
 args = parser.parse_args()
 
@@ -36,6 +37,7 @@ def main():
         config["db"]["database"],
         config["db"]["user"],
         config["db"]["password"],
+        reset=args.reset,
     )
 
     # CREATE PI GPIO INSTANCE
