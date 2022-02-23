@@ -23,7 +23,7 @@ class List(PihomeActor):
 
         self.title = title
         self.line = line
-        self.value_logics = (Logic(value) for value in values)
+        self.value_logics = [Logic(value) for value in values]
 
         self.epd = epd2in7.EPD()
         self.epd.init()
