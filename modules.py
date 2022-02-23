@@ -42,8 +42,9 @@ class ActorFactory:
     def find_modules(self, module_dir):
         try:
             imported_modules = __import__(module_dir, fromlist=[""])
-        except:
+        except Exception as e:
             logger.error(f"Could not load Module {module_dir}")
+            logger.debug(e)
             return
 
         # LOOK IN CURRENT DIR
@@ -53,8 +54,9 @@ class ActorFactory:
             if not is_dir:
                 try:
                     module_package = __import__(module_name, fromlist=[""])
-                except:
+                except Exception as e:
                     logger.error(f"Could not load Module {module_name}")
+                    logger.debug(e)
                     continue
                 module_classes = inspect.getmembers(module_package, inspect.isclass)
                 for (_, module_class) in module_classes:
