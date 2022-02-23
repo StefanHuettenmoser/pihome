@@ -16,6 +16,12 @@ parser = argparse.ArgumentParser(description="Get Data and Upload to Pi Home Dat
 parser.add_argument("-v", "--verbose", action="store_true", help="verbose logging")
 parser.add_argument("-r", "--reset", action="store_true", help="reset database")
 parser.add_argument(
+    "-d",
+    "--debug",
+    action="store_true",
+    help="execute every module twice to check for errors (has no effect in schedule mode)",
+)
+parser.add_argument(
     "-s",
     "--schedule",
     action="store_true",
@@ -54,6 +60,8 @@ def main():
         # SCHEDULE EXECUTIONS IF DESIRED
         if not args.schedule:
             actor_stager.perform()
+            if args.debug:
+                actor_stager.perform()
         else:
             performance_schedule = PerformanceSchedule(actor_stager)
             performance_schedule.follow_through()

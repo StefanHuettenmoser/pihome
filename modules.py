@@ -145,6 +145,7 @@ class ActorStager:
             actor: PihomeActor
             for actor in actors:
                 if time_index == -1 or time_index % actor.every == 0:
+                    logger.debug(f"Executes every {actor.every} minutes")
                     start_time = time.time()
                     response = actor.perform(actor_finished)
                     logger.debug(
@@ -177,7 +178,7 @@ class PerformanceSchedule:
             logger.debug("&" * 60)
             logger.debug(f"Perform scheduled update {time_index}")
             start_time = time.time()
-            self.actor_stager.perform(time_index)
+            self.actor_stager.perform(time_index=time_index)
             delta = time.time() - start_time
             if delta > MIN_EVERY_S:
                 logger.warn(f"Execution @{time_index} took to long! ({delta:.3f}s)")
