@@ -12,6 +12,7 @@ class BasicList:
         font_title,
         padding=(15, 5, 15, 15),
         line_spacing=0.5,
+        max_lines=100,
     ):
 
         self.w = width
@@ -28,7 +29,12 @@ class BasicList:
         self.PADDING = padding  # left, top, right, bottom
         self.LINE_SPACING = line_spacing
 
+        self.max_lines = max_lines
+
     def add_element(self, list_entry):
+        if len(self.list_entries) > self.max_lines:
+            self.list_entries.pop()
+        # TODO: implement maximum
         self.list_entries.append(list_entry)
 
     def get_image(self, position=0, line_width=1):
