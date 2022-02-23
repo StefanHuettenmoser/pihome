@@ -2,8 +2,8 @@ from modules import PihomeActor
 
 
 class Test(PihomeActor):
-    def __init__(self, pi, db, name, stage, value_type, arg1, arg2):
-        super().__init__(pi, db, name, stage)
+    def __init__(self, pi, db, name, stage, every, value_type, arg1, arg2):
+        super().__init__(pi, db, name, stage, every)
 
         self.value_type = value_type
         self.arg1 = arg1

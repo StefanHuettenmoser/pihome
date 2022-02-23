@@ -38,8 +38,8 @@ from modules import PihomeActor
 
 
 class List(PihomeActor):
-    def __init__(self, pi, db, name, stage):
-        super().__init__(pi, db, name, stage)
+    def __init__(self, pi, db, name, stage, every):
+        super().__init__(pi, db, name, stage, every)
         # GPIO.setmode(GPIO.BCM)
         self.epd = epd2in7.EPD()
         self.epd.init()

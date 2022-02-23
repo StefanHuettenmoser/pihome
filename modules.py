@@ -12,11 +12,22 @@ import database
 
 
 class PihomeActor:
-    def __init__(self, pi: pigpio.pi, db: database.Database, name: str, stage: int):
+    def __init__(
+        self, pi: pigpio.pi, db: database.Database, name: str, stage: int, every: int
+    ):
         self.pi = pi
         self.db = db
         self.name = name
         self.stage = stage
+        self.every = int(every)
+        if (
+            self.every != every
+            or self.every < 1
+            or self.every > PerformanceSchedule.MAX_EVERY
+        ):
+            raise ValueError(
+                f"The 'every'-parameter must be a whole number between 1 and {PerformanceSchedule.MAX_EVERY}, got {every}"
+            )
 
     def perform(self, callback):
         raise NotImplementedError(f"Actor has no performance")
@@ -30,8 +41,13 @@ class ActorFactory:
 
     def build_actor(self, pi, db, name, config) -> PihomeActor:
         logger.debug(f"Build Actor {name} [{config['module']}]")
+        every = PerformanceSchedule.MIN_EVERY
+        try:
+            every = config["every"]
+        except:
+            pass
         return self.modules[self.module_dir + "." + config["module"]](
-            pi, db, name, config["stage"], **config["args"]
+            pi, db, name, config["stage"], every, **config["args"]
         )
 
     def load_modules(self):
@@ -112,7 +128,7 @@ class ActorStager:
 
             self.actors_by_stage[actor.stage].append(actor)
 
-    def perform(self, timeout=30, poll_interval=0.25):
+    def perform(self, time_index=-1, timeout=30, poll_interval=0.25):
         # LET ACTORS PERFORM
         stages = list(self.actors_by_stage)
         stages.sort()
@@ -121,19 +137,52 @@ class ActorStager:
             logger.debug(f"Open Stage {stage}")
             actors = self.actors_by_stage[stage]
             self.wait_for_actors = len(actors)
-            must_end = time.time() + timeout
+            stage_must_end = time.time() + timeout
 
             def actor_finished():
                 self.wait_for_actors -= 1
 
+            actor: PihomeActor
             for actor in actors:
-                response = actor.perform(actor_finished)
-                logger.debug(f"[{stage}] {actor.name}: {response}")
+                if time_index == -1 or time_index % actor.every == 0:
+                    start_time = time.time()
+                    response = actor.perform(actor_finished)
+                    logger.debug(
+                        f"[{stage}] {actor.name}: {response} ({time.time()-start_time:.2f}s)"
+                    )
+                else:
+                    actor_finished()
 
-            while time.time() < must_end and self.wait_for_actors:
+            while time.time() < stage_must_end and self.wait_for_actors:
                 time.sleep(poll_interval)
             if self.wait_for_actors:
                 raise TimeoutError(
                     f"Stage {stage} timed out after {timeout} seconds. {self.wait_for_actors} Tasks unfinished."
                 )
             logger.debug(f"Close Stage {stage}")
+
+
+class PerformanceSchedule:
+    MIN_EVERY = 1
+    MAX_EVERY = 60 * 24 * 7 * 4
+
+    def __init__(self, actor_stager):
+        self.actor_stager = actor_stager
+
+    def follow_through(self):
+        MIN_EVERY_S = self.MIN_EVERY * 60
+
+        time_index = 0
+        while True:
+            start_time = time.time()
+            self.actor_stager.perform(time_index)
+            delta = time.time() - start_time()
+            if delta > MIN_EVERY_S:
+                logger.warn(f"Execution @{time_index} took to long! ({delta:.3f}s)")
+                delta = MIN_EVERY_S
+            else:
+                logger.debug(f"Execution @{time_index} took {delta:.3f}s")
+
+            time.sleep(MIN_EVERY_S - delta)
+            time_index += 1
+            time_index %= self.MAX_EVERY

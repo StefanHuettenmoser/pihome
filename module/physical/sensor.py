@@ -10,8 +10,8 @@ from modules import PihomeActor
 
 
 class Sensor(PihomeActor):
-    def __init__(self, pi, db, name, stage, output_pin, value_type):
-        super().__init__(pi, db, name, stage)
+    def __init__(self, pi, db, name, stage, every, output_pin, value_type):
+        super().__init__(pi, db, name, stage, every)
 
         self.output_pin = output_pin
         self.value_type = value_type
@@ -35,6 +35,7 @@ class AnalogSensor(Sensor):
         db,
         name,
         stage,
+        every,
         output_pin,
         discharge_pin,
         min_value,
@@ -46,7 +47,7 @@ class AnalogSensor(Sensor):
         timeout=2,
         measurement_tick=0.0001,
     ):
-        super().__init__(pi, db, name, stage, output_pin, value_type="DECIMAL")
+        super().__init__(pi, db, name, stage, every, output_pin, value_type="DECIMAL")
 
         self.discharge_pin = discharge_pin  # b_pin (inner pin)
 

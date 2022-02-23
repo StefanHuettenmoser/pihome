@@ -7,8 +7,8 @@ from database import Logic
 
 
 class Debug(PihomeActor):
-    def __init__(self, pi, db, name, stage, state):
-        super().__init__(pi, db, name, stage)
+    def __init__(self, pi, db, name, stage, state, every):
+        super().__init__(pi, db, name, stage, every)
         self.state_logic = Logic(state)
 
     def perform(self, callback):
@@ -18,8 +18,8 @@ class Debug(PihomeActor):
 
 
 class Output(PihomeActor):
-    def __init__(self, pi, db, name, stage, input_pin, state=0, timeout=0):
-        super().__init__(pi, db, name, stage)
+    def __init__(self, pi, db, name, stage, every, input_pin, state=0, timeout=0):
+        super().__init__(pi, db, name, stage, every)
 
         self.input_pin = input_pin
         self.state_logic = Logic(state)
@@ -54,12 +54,13 @@ class PWMOutput(PihomeActor):
         db,
         name,
         stage,
+        every,
         input_pin,
         frequency,
         duty_cycle=0.5,
         hardware_PWM=False,
     ):
-        super().__init__(pi, db, name, stage)
+        super().__init__(pi, db, name, stage, every)
         self.input_pin = input_pin
         self.frequency_logic = Logic(frequency)
         self.duty_cycle_logic = Logic(duty_cycle)

@@ -7,8 +7,8 @@ from .lib import meteo_swiss
 
 
 class MeteoSwissScraper(PihomeActor):
-    def __init__(self, pi, db, name, stage, location, lat, long):
-        super().__init__(pi, db, name, stage)
+    def __init__(self, pi, db, name, stage, every, location, lat, long):
+        super().__init__(pi, db, name, stage, every)
         self.location = location
         self.weather_scraper = meteo_swiss.WeatherScraper(lat, long)
 
