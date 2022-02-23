@@ -174,14 +174,17 @@ class PerformanceSchedule:
 
         time_index = 0
         while True:
+            logger.debug("&" * 60)
+            logger.debug(f"Perform scheduled update {time_index}")
             start_time = time.time()
             self.actor_stager.perform(time_index)
-            delta = time.time() - start_time()
+            delta = time.time() - start_time
             if delta > MIN_EVERY_S:
                 logger.warn(f"Execution @{time_index} took to long! ({delta:.3f}s)")
                 delta = MIN_EVERY_S
             else:
                 logger.debug(f"Execution @{time_index} took {delta:.3f}s")
+            logger.debug("&" * 60)
 
             time.sleep(MIN_EVERY_S - delta)
             time_index += 1
