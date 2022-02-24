@@ -91,8 +91,8 @@ class PWMOutput(TimeoutOutput):
             self.pi.set_PWM_dutycycle(self.input_pin, int(duty_cycle * 255))
 
     def perform(self, callback):
-        frequency = self.frequency_logic.get_value()
-        duty_cycle = self.duty_cycle_logic.get_value()
+        frequency = self.frequency_logic.get_value(self.db)
+        duty_cycle = self.duty_cycle_logic.get_value(self.db)
 
         def action():
             self.set_pwm(frequency, duty_cycle)
