@@ -5,6 +5,8 @@ import time
 
 
 class Sensor(PihomeActor):
+    GAS_PREHEAT_DURATION_S = 60
+
     def __init__(self, pi, db, name, stage, every, measure_gas=True, ADDR_77=False):
         super().__init__(pi, db, name, stage, every)
         self.measure_gas = measure_gas
@@ -32,16 +34,19 @@ class Sensor(PihomeActor):
             self.sensor.select_gas_heater_profile(0)
 
     def perform(self, callback):
+        must_end = time.time() + (
+            self.GAS_PREHEAT_DURATION_S if self.measure_gas else 0
+        )
         while True:
             if self.sensor.get_sensor_data():
-                if not self.measure_gas or self.sensor.data.heat_stable:
+                if time.time() >= must_end:
                     for dimension in self.get_dimensions(self.measure_gas):
                         table_name = self.get_table_name(self.name, dimension["name"])
                         value = dimension["get_value"](self.sensor.data)
                         self.db.add_one(table_name, value)
                     callback()
                     return "BME680 Finished Measure of Environment Data"
-                time.sleep(0.5)
+                time.sleep(1)
 
     @staticmethod
     def get_table_name(name, dimension):
