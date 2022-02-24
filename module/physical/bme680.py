@@ -5,11 +5,20 @@ import time
 
 
 class Sensor(PihomeActor):
-    GAS_PREHEAT_DURATION_S = 60
-
-    def __init__(self, pi, db, name, stage, every, measure_gas=True, ADDR_77=False):
+    def __init__(
+        self,
+        pi,
+        db,
+        name,
+        stage,
+        every,
+        measure_gas=True,
+        gas_preheat_duration_s=60,
+        ADDR_77=False,
+    ):
         super().__init__(pi, db, name, stage, every)
         self.measure_gas = measure_gas
+        self.gas_preheat_duration_s = gas_preheat_duration_s
 
         for dimension in self.get_dimensions(self.measure_gas):
             self.db.init_table(
@@ -35,7 +44,7 @@ class Sensor(PihomeActor):
 
     def perform(self, callback):
         must_end = time.time() + (
-            self.GAS_PREHEAT_DURATION_S if self.measure_gas else 0
+            self.gas_preheat_duration_s if self.measure_gas else 0
         )
         while True:
             if self.sensor.get_sensor_data():
