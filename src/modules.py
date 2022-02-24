@@ -120,7 +120,7 @@ class ActorStager:
             actor_config = config["actors"][actor_name]
             actor_stage = actor_config["stage"]
             # skip if stage is defined and not equal to actor_stage
-            if not actor_stage is None and actor_stage != stage:
+            if not stage is None and stage != actor_stage:
                 continue
             actor = actor_factory.build_actor(
                 pi,
