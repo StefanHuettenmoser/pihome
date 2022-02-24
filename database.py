@@ -246,6 +246,11 @@ class TimeFrame:
 
 
 class Logic:
+    TIME_KEY = "$TIME"
+    TIME_DELTA_KEY = "$DELTA_S"
+    TIME_FORMAT_KEY = "$FORMAT"
+    DEFAULT_TIME_FORMAT = "%d.%m.%Y %H:%M:%S"
+
     def __init__(self, logic):
         # get operation
         self.operation = ArithmeticOperation(
@@ -256,6 +261,18 @@ class Logic:
         if not type(logic) == dict:
             self.static_value = logic
             return
+        try:
+            time_logic = logic[self.TIME_KEY]
+            time_delta_s = load_key(time_logic, self.TIME_DELTA_KEY, 0)
+            time_format = load_key(
+                time_logic, self.TIME_FORMAT_KEY, self.DEFAULT_TIME_FORMAT
+            )
+            self.static_value = (
+                datetime.now() + timedelta(seconds=time_delta_s)
+            ).strftime(time_format)
+            return
+        except:
+            pass
 
         try:
             # try to get the reference_table for the db
