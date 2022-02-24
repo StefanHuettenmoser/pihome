@@ -174,6 +174,7 @@ class PerformanceSchedule:
         MIN_EVERY_S = self.MIN_EVERY * 60
 
         time_index = 0
+        time.sleep(60 - time.time() % 60)
         while True:
             logger.debug("&" * 60)
             logger.debug(f"Perform scheduled update {time_index}")
