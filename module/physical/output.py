@@ -101,4 +101,4 @@ class PWMOutput(TimeoutOutput):
             self.set_pwm(0, 0)
 
         self.timeout_action(action, revert_action, callback)
-        return f"Switch Pin-{self.input_pin} to {frequency:.2f}Hz @{int(duty_cycle)*100}% {f' for {self.timeout} seconds' if self.timeout else ''}"
+        return f"Switch Pin-{self.input_pin} to {frequency:.2f}Hz @{int(duty_cycle*100)}% {f' for {self.timeout} seconds' if self.timeout else ''}"
