@@ -5,14 +5,18 @@ import time
 
 
 class Sensor(PihomeActor):
-    def __init__(self, pi, db, name, stage, every, measure_gas=True):
+    def __init__(self, pi, db, name, stage, every, measure_gas=True, ADDR_77=False):
         super().__init__(pi, db, name, stage, every)
         self.measure_gas = measure_gas
 
         for dimension_name, _ in self.get_dimensions(self.measure_gas):
             self.db.init_table(self.get_table_name(self.name, dimension_name), "FLOAT")
 
-        self.sensor = bme680.BME680()
+        self.sensor = bme680.BME680(
+            i2c_addr=bme680.constants.I2C_ADDR_PRIMARY
+            if ADDR_77
+            else bme680.constants.I2C_ADDR_SECONDARY
+        )
 
         self.sensor.set_humidity_oversample(bme680.OS_2X)
         self.sensor.set_pressure_oversample(bme680.OS_4X)
