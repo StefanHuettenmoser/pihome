@@ -7,7 +7,7 @@ from database import Logic
 
 
 class Debug(PihomeActor):
-    def __init__(self, pi, db, name, stage, state, every):
+    def __init__(self, pi, db, name, stage, every, state):
         super().__init__(pi, db, name, stage, every)
         self.state_logic = Logic(state)
 
