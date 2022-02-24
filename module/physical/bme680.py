@@ -9,8 +9,10 @@ class Sensor(PihomeActor):
         super().__init__(pi, db, name, stage, every)
         self.measure_gas = measure_gas
 
-        for dimension_name, _ in self.get_dimensions(self.measure_gas):
-            self.db.init_table(self.get_table_name(self.name, dimension_name), "FLOAT")
+        for dimension in self.get_dimensions(self.measure_gas):
+            self.db.init_table(
+                self.get_table_name(self.name, dimension["name"]), "FLOAT"
+            )
 
         self.sensor = bme680.BME680(
             i2c_addr=bme680.constants.I2C_ADDR_PRIMARY
@@ -32,12 +34,10 @@ class Sensor(PihomeActor):
     def perform(self, callback):
         while True:
             if self.sensor.get_sensor_data():
-                if not self.measure_gas or self.sensor.heat_stable:
-                    for dimension_name, get_value in self.get_dimensions(
-                        self.measure_gas
-                    ):
-                        table_name = self.get_table_name(self.name, dimension_name)
-                        value = get_value(self.sensor.data)
+                if not self.measure_gas or self.sensor.data.heat_stable:
+                    for dimension in self.get_dimensions(self.measure_gas):
+                        table_name = self.get_table_name(self.name, dimension["name"])
+                        value = dimension["get_value"](self.sensor.data)
                         self.db.add_one(table_name, value)
                     callback()
                     return "BME680 Finished Measure of Environment Data"
