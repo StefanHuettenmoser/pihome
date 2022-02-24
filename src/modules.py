@@ -8,7 +8,7 @@ import inspect
 import os
 import pkgutil
 
-import database
+import src.database as database
 
 
 class PihomeActor:

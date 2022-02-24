@@ -1,7 +1,7 @@
 # https://github.com/waveshare/e-Paper/blob/master/RaspberryPi_JetsonNano/python/examples/epd_2in7_test.py
 import logging
 
-from logic import Logic
+from src.logic import Logic
 
 logging.basicConfig(level=logging.DEBUG)
 
@@ -14,7 +14,7 @@ rsc_dir = os.path.join(os.path.dirname(os.path.realpath(__file__)), "rsc")
 from .lib import epd2in7
 from .layouts import BasicList
 
-from modules import PihomeActor
+from src.modules import PihomeActor
 
 
 class List(PihomeActor):

@@ -6,7 +6,7 @@ import pigpio
 import time
 import math
 
-from modules import PihomeActor
+from src.modules import PihomeActor
 
 
 class Sensor(PihomeActor):

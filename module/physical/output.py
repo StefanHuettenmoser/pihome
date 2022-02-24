@@ -1,8 +1,8 @@
 import subprocess
 import threading
 
-from modules import PihomeActor
-from logic import Logic
+from src.modules import PihomeActor
+from src.logic import Logic
 
 
 class Debug(PihomeActor):

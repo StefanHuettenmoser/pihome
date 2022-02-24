@@ -1,4 +1,4 @@
-from modules import PihomeActor
+from src.modules import PihomeActor
 
 import threading
 

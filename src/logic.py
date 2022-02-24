@@ -2,7 +2,7 @@ from datetime import datetime, timedelta
 import math
 from inspect import signature
 
-from database import Database, VALUE
+from src.database import Database, VALUE
 
 
 def load_key(json, key, default):

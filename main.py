@@ -7,9 +7,9 @@ import argparse
 import os
 import json
 
-from log.logger import BaseLogger
-from modules import ActorStager, PerformanceSchedule
-from database import Database
+from src.log.logger import BaseLogger
+from src.modules import ActorStager, PerformanceSchedule
+from src.database import Database
 
 parser = argparse.ArgumentParser(
     prog="pihome",
@@ -40,7 +40,8 @@ def main():
     # INITIALIZE LOGGER
     file_dir = os.path.split(os.path.realpath(__file__))[0]
     logger_conf_file = os.path.join(
-        file_dir, "log/logging_v.conf" if args.verbose else "log/logging.conf"
+        file_dir,
+        "log_config/logging_v.conf" if args.verbose else "log_config/logging.conf",
     )
     BaseLogger(logger_conf_file)
 
