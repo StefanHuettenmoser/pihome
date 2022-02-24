@@ -2,7 +2,9 @@ import logging
 
 logger = logging.getLogger(__name__)
 
+import math
 import time
+import datetime
 import pigpio
 import inspect
 import os
@@ -171,7 +173,7 @@ class ActorStager:
 
 class PerformanceSchedule:
     MIN_EVERY = 1
-    MAX_EVERY = 60 * 24 * 7 * 4
+    MAX_EVERY = 60 * 24 * 7
 
     def __init__(self, actor_stager):
         self.actor_stager = actor_stager
@@ -179,8 +181,25 @@ class PerformanceSchedule:
     def follow_through(self):
         MIN_EVERY_S = self.MIN_EVERY * 60
 
-        time_index = 0
-        wait_time = 60 - time.time() % 60
+        now = datetime.datetime.now()
+        # calculate time since last monday (00:00:00)
+        time_index = math.floor(
+            (
+                now
+                - (
+                    now
+                    - datetime.timedelta(
+                        days=now.weekday(),
+                        hours=now.hour,
+                        minutes=now.minute,
+                        seconds=now.second,
+                        microseconds=now.microsecond,
+                    )
+                )
+            ).total_seconds()
+            / 60
+        )
+        wait_time = 60 - now.second + (now.microsecond / 1000**2)
         logger.debug(f"Wait for {wait_time:.2f}s to start")
         time.sleep(wait_time)
 
@@ -195,8 +214,9 @@ class PerformanceSchedule:
                 delta = MIN_EVERY_S
             else:
                 logger.debug(f"Execution @{time_index} took {delta:.3f}s")
+                now = datetime.datetime.now()
+                delta = now.second + (now.microsecond / 1000**2)
             logger.debug("&" * 60)
-
             time.sleep(MIN_EVERY_S - delta)
             time_index += 1
             time_index %= self.MAX_EVERY
