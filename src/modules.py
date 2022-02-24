@@ -183,7 +183,7 @@ class PerformanceSchedule:
 
         now = datetime.datetime.now()
         # calculate time since last monday (00:00:00)
-        time_index = math.floor(
+        time_index = 1 + math.floor(
             (
                 now
                 - (
