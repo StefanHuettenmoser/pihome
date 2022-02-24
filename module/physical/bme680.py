@@ -13,12 +13,14 @@ class Sensor(PihomeActor):
         stage,
         every,
         measure_gas=True,
-        gas_preheat_duration_s=60,
+        gas_preheat_duration_s=15,
+        initial_preheat_s=120,
         ADDR_77=False,
     ):
         super().__init__(pi, db, name, stage, every)
         self.measure_gas = measure_gas
         self.gas_preheat_duration_s = gas_preheat_duration_s
+        self.initial_preheat_s = initial_preheat_s
 
         for dimension in self.get_dimensions(self.measure_gas):
             self.db.init_table(
@@ -41,21 +43,26 @@ class Sensor(PihomeActor):
             self.sensor.set_gas_heater_temperature(320)
             self.sensor.set_gas_heater_duration(150)
             self.sensor.select_gas_heater_profile(0)
+            self.perform(callback=None, initialize=True)
 
-    def perform(self, callback):
+    def perform(self, callback, initialize=False):
         must_end = time.time() + (
-            self.gas_preheat_duration_s if self.measure_gas else 0
+            (self.initial_preheat_s if initialize else self.gas_preheat_duration_s)
+            if self.measure_gas
+            else 0
         )
         while True:
             if self.sensor.get_sensor_data():
                 if time.time() >= must_end:
+                    if initialize:
+                        return "BME680 Initialized"
                     for dimension in self.get_dimensions(self.measure_gas):
                         table_name = self.get_table_name(self.name, dimension["name"])
                         value = dimension["get_value"](self.sensor.data)
                         self.db.add_one(table_name, value)
                     callback()
                     return "BME680 Finished Measure of Environment Data"
-                time.sleep(1)
+                time.sleep(0.5)
 
     @staticmethod
     def get_table_name(name, dimension):
