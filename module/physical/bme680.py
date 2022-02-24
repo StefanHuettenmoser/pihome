@@ -36,7 +36,7 @@ class Sensor(PihomeActor):
         self.sensor.set_humidity_oversample(bme680.OS_2X)
         self.sensor.set_pressure_oversample(bme680.OS_4X)
         self.sensor.set_temperature_oversample(bme680.OS_8X)
-        self.sensor.set_filter(bme680.FILTER_SIZE_3)
+        self.sensor.set_filter(bme680.FILTER_SIZE_63)
 
         if self.measure_gas:
             self.sensor.set_gas_status(bme680.ENABLE_GAS_MEAS)
