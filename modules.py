@@ -39,7 +39,7 @@ class ActorFactory:
         self.module_dir = module_dir
         self.load_modules()
 
-    def build_actor(self, pi, db, name, config) -> PihomeActor:
+    def build_actor(self, pi, db, name, stage, config) -> PihomeActor:
         logger.debug(f"Build Actor {name} [{config['module']}]")
         every = PerformanceSchedule.MIN_EVERY
         try:
@@ -47,7 +47,7 @@ class ActorFactory:
         except:
             pass
         return self.modules[self.module_dir + "." + config["module"]](
-            pi, db, name, config["stage"], every, **config["args"]
+            pi, db, name, stage, every, **config["args"]
         )
 
     def load_modules(self):
@@ -107,7 +107,7 @@ class ActorFactory:
 
 
 class ActorStager:
-    def __init__(self, config, pi, db):
+    def __init__(self, config, pi, db, stage=None):
         # INITIALIZE WAIT FOR MODULE
         self.wait_for_actors = 0
 
@@ -117,10 +117,16 @@ class ActorStager:
         # LOAD ACTORS BY STAGE FROM CONFIG (USING PLUGINS)
         self.actors_by_stage = {}
         for actor_name in config["actors"]:
+            actor_config = config["actors"][actor_name]
+            actor_stage = actor_config["stage"]
+            # skip if stage is defined and not equal to actor_stage
+            if not actor_stage is None and actor_stage != stage:
+                continue
             actor = actor_factory.build_actor(
                 pi,
                 db,
                 actor_name,
+                actor_stage,
                 config["actors"][actor_name],
             )
             if not actor.stage in self.actors_by_stage:

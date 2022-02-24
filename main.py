@@ -11,21 +11,26 @@ from log.logger import BaseLogger
 from modules import ActorStager, PerformanceSchedule
 from database import Database
 
-parser = argparse.ArgumentParser(description="Get Data and Upload to Pi Home Database")
+parser = argparse.ArgumentParser(
+    prog="pihome",
+    description="Get Data and Upload to Pi Home Database",
+    allow_abbrev=False,
+)
 # parser.add_argument("test", type=str, metavar="T", help="I can not help you")
 parser.add_argument("-v", "--verbose", action="store_true", help="verbose logging")
 parser.add_argument("-r", "--reset", action="store_true", help="reset database")
 parser.add_argument(
-    "-d",
-    "--debug",
-    action="store_true",
-    help="execute every module twice to check for errors (has no effect in schedule mode)",
+    "-s", "--stage", type=int, help="force a single stage to be executed"
 )
 parser.add_argument(
-    "-s",
-    "--schedule",
+    "--debug-once",
     action="store_true",
-    help="schedule executions according to config-file",
+    help="execute every module twice to check for errors",
+)
+parser.add_argument(
+    "--once",
+    action="store_true",
+    help="run only once",
 )
 
 args = parser.parse_args()
@@ -56,11 +61,11 @@ def main():
     pi = pigpio.pi()
     try:
         # CREATE ACTOR STAGER
-        actor_stager = ActorStager(config, pi, db)
+        actor_stager = ActorStager(config, pi, db, args.stage)
         # SCHEDULE EXECUTIONS IF DESIRED
-        if not args.schedule:
+        if args.once or args.debug_once:
             actor_stager.perform()
-            if args.debug:
+            if args.debug_once:
                 actor_stager.perform()
         else:
             performance_schedule = PerformanceSchedule(actor_stager)
