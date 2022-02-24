@@ -1,4 +1,3 @@
-from database import TIME
 from modules import PihomeActor
 
 import threading
@@ -18,9 +17,7 @@ class MeteoSwissScraper(PihomeActor):
             db_table = f"{self.location}${key}"
 
             self.db.init_table(
-                db_table,
-                meteo_swiss.WeatherScraper.VALUE_TYPES[key]["value_type"],
-                primary_keys=[TIME],
+                db_table, meteo_swiss.WeatherScraper.VALUE_TYPES[key]["value_type"]
             )
             # self.db.delete_table(db_table)
             # continue

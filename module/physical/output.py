@@ -1,15 +1,14 @@
 import subprocess
-from time import sleep
 import threading
 
 from modules import PihomeActor
-from database import Logic
+from logic import Logic
 
 
 class Debug(PihomeActor):
     def __init__(self, pi, db, name, stage, every, state):
         super().__init__(pi, db, name, stage, every)
-        self.state_logic = Logic(state)
+        self.state_logic = Logic.from_config(state)
 
     def perform(self, callback):
         state = self.state_logic.get_value(self.db)
@@ -41,7 +40,7 @@ class Output(TimeoutOutput):
         super().__init__(pi, db, name, stage, every, timeout)
 
         self.input_pin = input_pin
-        self.state_logic = Logic(state)
+        self.state_logic = Logic.from_config(state)
 
         self.___execute(f"pigs modes {self.input_pin} w")
 
@@ -79,8 +78,8 @@ class PWMOutput(TimeoutOutput):
     ):
         super().__init__(pi, db, name, stage, every, timeout)
         self.input_pin = input_pin
-        self.frequency_logic = Logic(frequency)
-        self.duty_cycle_logic = Logic(duty_cycle)
+        self.frequency_logic = Logic.from_config(frequency)
+        self.duty_cycle_logic = Logic.from_config(duty_cycle)
         self.hardware_PWM = hardware_PWM
 
     def set_pwm(self, frequency, duty_cycle):

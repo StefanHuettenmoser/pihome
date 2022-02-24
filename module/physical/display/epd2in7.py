@@ -1,7 +1,7 @@
 # https://github.com/waveshare/e-Paper/blob/master/RaspberryPi_JetsonNano/python/examples/epd_2in7_test.py
 import logging
 
-from database import Logic
+from logic import Logic
 
 logging.basicConfig(level=logging.DEBUG)
 
@@ -36,7 +36,8 @@ class List(PihomeActor):
         self.title = title
         self.lines = lines
         self.value_logics = [
-            [Logic(value) for value in line_values] for line_values in values
+            [Logic.from_config(value) for value in line_values]
+            for line_values in values
         ]
 
         self.epd = epd2in7.EPD()
