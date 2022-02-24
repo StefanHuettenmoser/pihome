@@ -26,7 +26,7 @@ class Sensor(PihomeActor):
         if self.measure_gas:
             self.sensor.set_gas_status(bme680.ENABLE_GAS_MEAS)
             self.sensor.set_gas_heater_temperature(320)
-            self.sensor.set_gas_header_duration(150)
+            self.sensor.set_gas_heater_duration(150)
             self.sensor.select_gas_heater_profile(0)
 
     def perform(self, callback):
