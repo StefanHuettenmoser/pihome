@@ -8,6 +8,7 @@ const Home = () => {
 	console.log(tableNames);
 	return (
 		<div>
+			<h1 key="title">Tables</h1>
 			<>
 				{tableNames && (
 					<ul>
