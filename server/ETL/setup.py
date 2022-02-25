@@ -20,7 +20,7 @@ setup(
     version="0.1",
     url="https://github.com/StefanHuettenmoser/pihome",
     license="MIT",
-    author="Stefan Hüttenmoser",
+    author="Stefan Huettenmoser",
     author_email="stefan.huettenmoser@gmail.com",
     classifiers=["Development Status :: 3 - Alpha"],
     python_requires=">=3.8",
