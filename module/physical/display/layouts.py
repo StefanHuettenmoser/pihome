@@ -33,8 +33,7 @@ class BasicList:
 
     def add_element(self, list_entry):
         if len(self.list_entries) > self.max_lines:
-            self.list_entries.pop()
-        # TODO: implement maximum
+            self.list_entries.pop(0)
         self.list_entries.append(list_entry)
 
     def get_image(self, position=0, line_width=1):
