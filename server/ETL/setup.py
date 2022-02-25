@@ -17,7 +17,7 @@ setup(
     description="A modular python script that collects data and stores it in a database",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    packages=["log"],
+    packages=["src/log"],
     version="0.1",
     url="https://github.com/StefanHuettenmoser/pihome",
     license="MIT",
