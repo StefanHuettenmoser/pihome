@@ -1,0 +1,38 @@
+.line {
+	stroke-width: 3;
+	stroke-linejoin: round;
+	stroke-linecap: round;
+}
+
+.line-white,
+.gridline-white line {
+	stroke: white;
+}
+.line-light,
+.gridline-light line {
+	stroke: lightgray;
+}
+.line-secondary,
+.gridline-secondary line {
+	stroke: gray;
+}
+.line-primary,
+.gridline-primary line {
+	stroke: blue;
+}
+
+.axis-label text {
+	fill: gray;
+}
+
+.axis-title {
+	fill: blue;
+	font-size: larger;
+}
+
+.primary {
+	fill: blue;
+}
+.no-fill {
+	fill: none;
+}

@@ -14,7 +14,7 @@ const pool = mysql.createPool({
 
 exports.getTableNames = () => {
 	return new Promise((resolve, reject) => {
-		var sql = "SHOW TABLES";
+		const sql = "SHOW TABLES";
 		pool.getConnection((err, connection) => {
 			if (err) return reject(err);
 			connection.query(sql, (err, results) => {
@@ -25,6 +25,20 @@ exports.getTableNames = () => {
 						return result[`Tables_in_${config.db.database}`];
 					})
 				);
+			});
+		});
+	});
+};
+
+exports.getTableData = (tableName) => {
+	return new Promise((resolve, reject) => {
+		const sql = "SELECT * FROM ??";
+		pool.getConnection((err, connection) => {
+			if (err) return reject(err);
+			connection.query(sql, [tableName], (err, results, fields) => {
+				connection.release();
+				if (err) return reject(err);
+				resolve(results);
 			});
 		});
 	});

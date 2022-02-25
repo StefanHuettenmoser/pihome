@@ -68,7 +68,6 @@ export const handleFetch = async (requestName, fetchRequest) => {
 	console.log("FETCH:", requestName);
 	try {
 		const res = await fetchRequest;
-		console.log(res);
 		if (res.ok) {
 			const data = await res.json();
 			return { ...statusToMessage(res.status, res.headers), data: data };

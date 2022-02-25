@@ -24,10 +24,9 @@ const router = express.Router();
 router.get("/", async (req, res) => {
 	try {
 		data = await db.getTableNames();
-		console.log(data);
 		return res.status(200).json(data);
 	} catch (err) {
-		return res.status(500).errMsg(500);
+		return res.status(500).json(errMsg(500));
 	}
 });
 
@@ -39,7 +38,16 @@ router.post("/", (req, res) => {});
 // GET ONE
 // *******
 //
-router.get("/:id", async (req, res) => {});
+router.get("/:tableName", async (req, res) => {
+	try {
+		data = await db.getTableData(req.params.tableName);
+		console.log(data);
+		return res.status(200).json(data);
+	} catch (err) {
+		console.log(err);
+		return res.status(500).json(errMsg(500));
+	}
+});
 
 // CHANGE ONE
 // **********
