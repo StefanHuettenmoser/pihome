@@ -58,7 +58,7 @@ export const authPUT = (path, body) => {
 
 // generate path to server
 const makeUrl = (path) => {
-	const url = process.env.REACT_APP_BACKEND_API_PREFIX + path;
+	const url = "/api/v1/" + path;
 	console.log(url);
 	return url;
 };
