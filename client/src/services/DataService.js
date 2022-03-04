@@ -10,7 +10,10 @@ const DataService = {
 		return handleFetch("getTableNames", authGET("data"));
 	},
 	getTableData: (table_name, start_date, end_date) => {
-		return handleFetch("getTableData", authGET(`data/${table_name}`));
+		return handleFetch(
+			`getTableData (${table_name})`,
+			authGET(`data/${table_name}`)
+		);
 	},
 };
 

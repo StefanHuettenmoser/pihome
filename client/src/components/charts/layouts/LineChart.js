@@ -42,7 +42,6 @@ export default function LineChart({
 	);
 
 	if (data.length === 0) return null;
-	console.log("XX", data, dimensions);
 	return (
 		<svg width={dimensions.width} height={dimensions.height}>
 			<g

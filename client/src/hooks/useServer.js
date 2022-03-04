@@ -12,7 +12,7 @@ export default function useServer(
 	const updateData = useCallback(async () => {
 		if (skip) return setData(initialValue);
 		const { message, data } = await serverPromiseFunction(...(args || []));
-		if (message) console.log(message);
+		if (message?.msgError) console.log(message);
 		const resolvedData = handleData ? handleData(data) : data;
 		setData(resolvedData);
 	}, [setData, serverPromiseFunction, args, handleData, skip]);

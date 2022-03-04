@@ -12,12 +12,11 @@ export default function DataChart({ data, ...props }) {
 		return {
 			width: width,
 			height: height,
-			margin: { top: 20, right: 20, bottom: 20, left: 20 },
+			margin: { top: 20, right: 20, bottom: 40, left: 60 },
 		};
 	}, [width, height]);
 	const xValue = useCallback((d) => new Date(d.Time), []);
 	const yValue = useCallback((d) => d.Value, []);
-	console.log(data);
 	return (
 		<div ref={ref} {...props}>
 			{data && (

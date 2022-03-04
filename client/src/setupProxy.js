@@ -1,6 +1,6 @@
 const { createProxyMiddleware } = require("http-proxy-middleware");
 
-const ip = Object.values(require("os").networkInterfaces()).reduce(
+let ip = Object.values(require("os").networkInterfaces()).reduce(
 	(r, list) =>
 		r.concat(
 			list.reduce(
@@ -11,6 +11,10 @@ const ip = Object.values(require("os").networkInterfaces()).reduce(
 		),
 	[]
 );
+// TODO: remove? only for dev with no internet
+if (!ip.length) {
+	ip = "localhost";
+}
 
 module.exports = (app) => {
 	app.use(

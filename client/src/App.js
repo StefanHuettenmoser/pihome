@@ -1,12 +1,12 @@
 import React from "react";
 import CssBaseline from "@mui/material/CssBaseline";
-import Home from "./containers/Home";
+import Dashboard from "./containers/Dashboard";
 
 function App() {
 	return (
 		<div className="App">
 			<CssBaseline key="css-baseline" />
-			<Home key="home" />
+			<Dashboard key="home" />
 		</div>
 	);
 }

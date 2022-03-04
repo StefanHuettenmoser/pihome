@@ -59,7 +59,6 @@ export const authPUT = (path, body) => {
 // generate path to server
 const makeUrl = (path) => {
 	const url = "/api/v1/" + path;
-	console.log(url);
 	return url;
 };
 
