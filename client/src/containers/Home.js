@@ -1,41 +1,23 @@
-import React, { useState, useMemo } from "react";
-import DataChart from "../components/charts/DataChart";
-import SelectList from "../components/SelectList";
-import useServer from "../hooks/useServer";
+import React from "react";
 
-import DataService from "../services/DataService";
+import Container from "@mui/material/Container";
+import Dashboard from "../components/Dashboard";
+import useBreakpoint from "../hooks/useBreakpoint";
+
+const columns = {
+	xs: 1,
+	sm: 1,
+	md: 2,
+	lg: 4,
+	xl: 6,
+};
 
 const Home = () => {
-	const [tableNames] = useServer(DataService.getTableNames);
-	const [tableName, setTableName] = useState();
-	const [tableData] = useServer(
-		DataService.getTableData,
-		useMemo(() => [tableName], [tableName]),
-		undefined,
-		undefined,
-		!tableName
-	);
-
-	const onSelect = ($tableName) => {
-		setTableName($tableName);
-		console.log($tableName);
-	};
-	console.log(tableData);
-
+	const breakpoint = useBreakpoint();
 	return (
-		<div style={{ padding: "1em" }}>
-			<SelectList
-				key="Home-SelectList"
-				listElements={tableNames}
-				onSelect={onSelect}
-				title="Tables"
-			/>
-			<DataChart
-				data={tableData}
-				style={{ height: "300px", width: "400px" }}
-				key="Home-DataChart"
-			/>
-		</div>
+		<Container key="home-container">
+			<Dashboard key="home-dashboard" columns={columns[breakpoint]} />
+		</Container>
 	);
 };
 

@@ -4,11 +4,11 @@ import Container from "@mui/material/Container";
 
 import useWidgets from "../hooks/useWidgets";
 
-import Widget from "../components/Widget";
+import Widget from "./Widget";
 
 import widgetsConfig from "../test_data/widgetsConfig";
 
-const Dashboard = ({ columns = 4, rowHeight = 100, gap = 10 }) => {
+const Dashboard = ({ columns = 4, rowHeight = 120, gap = 10 }) => {
 	const [editMode, setEditMode] = useState(true);
 	const [widgetLayouts, move, resize, setContent] = useWidgets(
 		widgetsConfig,

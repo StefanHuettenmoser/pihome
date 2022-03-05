@@ -19,12 +19,10 @@ export default function useWidgets(initWidgetsConfig, columns) {
 		sortByPosition(initWidgetsConfig);
 		return initWidgetsConfig;
 	});
-	console.log(widgetsConfig);
 
 	const widgetLayouts = useMemo(() => {
 		return DashboardService.calculateLayout(widgetsConfig, columns);
 	}, [columns, widgetsConfig]);
-	console.log(widgetLayouts);
 
 	const move = useCallback(
 		(_id, step) => {
