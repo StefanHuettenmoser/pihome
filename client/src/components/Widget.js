@@ -1,5 +1,6 @@
 import React, { useState, useContext, useCallback, useEffect } from "react";
 
+import Typography from "@mui/material/Typography";
 import DashboardService from "../services/DashboardService";
 
 import { DataContext } from "../context/DataContext";
@@ -11,30 +12,36 @@ const Widget = ({
 	editMode,
 	move,
 	resize,
-	setContent,
+	setArguments,
 	style = {},
 	...props
 }) => {
-	const { tableNames, getData } = useContext(DataContext);
+	const { tableNames, getData, subscribe, unsubscribe } =
+		useContext(DataContext);
 	const [newHeight, setNewHeight] = useState(widgetLayout.height);
 	const [newWidth, setNewWidth] = useState(widgetLayout.width);
 
 	const handleSelect = useCallback(
 		(tableName) => {
 			console.log("handleSelect");
-			setContent(widgetLayout._id, tableName);
+			setArguments(widgetLayout._id, { referenceTable: tableName });
 		},
-		[setContent, widgetLayout._id]
+		[setArguments, widgetLayout._id]
 	);
+	useEffect(() => {
+		subscribe(widgetLayout.widget.args.referenceTable);
+		return () => unsubscribe(widgetLayout.widget.args.referenceTable);
+	}, [widgetLayout.widget.args.referenceTable]);
 
 	return (
 		<div
 			style={{
 				...style,
 				...DashboardService.makeStyle(widgetLayout),
-				background: "lightgrey",
+				background: "white",
 				padding: "0.5em",
 				overflow: "hidden",
+				borderRadius: "5px",
 			}}
 			{...props}
 		>
@@ -47,13 +54,16 @@ const Widget = ({
 					flexDirection: "column",
 				}}
 			>
+				<Typography key={`${widgetLayout._id}-title`} variant="subtitle2">
+					{widgetLayout.widget.args.title}
+				</Typography>
 				{editMode && (
 					<>
 						{tableNames && (
 							<select
 								key={`widget-dropdown-${widgetLayout._id}`}
 								onChange={(e) => handleSelect(e.target.value)}
-								value={widgetLayout.data}
+								value={widgetLayout.widget.args.referenceTable}
 							>
 								{tableNames.map((tableName) => (
 									<option key={`widget-dropdown-element-${tableName}`}>
@@ -121,7 +131,7 @@ const Widget = ({
 					</>
 				)}
 				<DataChart
-					data={getData(widgetLayout.data)}
+					data={getData(widgetLayout.widget.args.referenceTable)}
 					style={{
 						height: "100%",
 						width: "100%",

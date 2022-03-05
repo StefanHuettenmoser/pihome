@@ -1,8 +1,10 @@
 import React from "react";
 
+import useTheme from "@mui/material/styles/useTheme";
+import useBreakpoint from "../hooks/useBreakpoint";
+
 import Container from "@mui/material/Container";
 import Dashboard from "../components/Dashboard";
-import useBreakpoint from "../hooks/useBreakpoint";
 
 const columns = {
 	xs: 1,
@@ -13,9 +15,13 @@ const columns = {
 };
 
 const Home = () => {
+	const theme = useTheme();
 	const breakpoint = useBreakpoint();
 	return (
-		<Container key="home-container">
+		<Container
+			key="home-container"
+			sx={{ background: theme.palette.grey.A100, py: 3 }}
+		>
 			<Dashboard key="home-dashboard" columns={columns[breakpoint]} />
 		</Container>
 	);

@@ -8,13 +8,6 @@ const sortByPosition = (list) => {
 };
 
 export default function useWidgets(initWidgetsConfig, columns) {
-	const { subscribe, unsubscribe } = useContext(DataContext);
-
-	useEffect(() => {
-		initWidgetsConfig.forEach(({ data }) => {
-			subscribe(data);
-		});
-	}, []);
 	const [widgetsConfig, setWidgetsConfig] = useState(() => {
 		sortByPosition(initWidgetsConfig);
 		return initWidgetsConfig;
@@ -78,17 +71,13 @@ export default function useWidgets(initWidgetsConfig, columns) {
 		[widgetsConfig, setWidgetsConfig]
 	);
 
-	const setContent = useCallback(
-		(_id, data) => {
-			console.log("Set Content", _id, data);
-
+	const setArguments = useCallback(
+		(_id, args) => {
 			const listIndex = widgetsConfig.map((e) => e._id).indexOf(_id);
 			console.log("Found @", listIndex);
 			const changedWidget = widgetsConfig[listIndex];
 			console.log(changedWidget);
-			unsubscribe(changedWidget.data);
-			changedWidget.data = data;
-			subscribe(changedWidget.data);
+			changedWidget.widget.args = { ...changedWidget.widget.args, ...args };
 			setWidgetsConfig((prev) => [
 				...prev.slice(0, listIndex),
 				changedWidget,
@@ -101,5 +90,5 @@ export default function useWidgets(initWidgetsConfig, columns) {
 	// TODO: REMOVE
 	// TODO: ADD
 
-	return [widgetLayouts, move, resize, setContent];
+	return [widgetLayouts, move, resize, setArguments];
 }
