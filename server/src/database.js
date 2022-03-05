@@ -12,6 +12,36 @@ const pool = mysql.createPool({
 	connectionLimit: 10,
 });
 
+const SQL_DATE_FORMAT = "%Y-%m-%d %H:%M:%S";
+const formatDate = (date, formatString, utc) => {
+	utc = utc ? "getUTC" : "get";
+	return formatString.replace(/%[YmdHMS]/g, function (m) {
+		switch (m) {
+			case "%Y":
+				return date[utc + "FullYear"]();
+			case "%m":
+				m = 1 + date[utc + "Month"]();
+				break;
+			case "%d":
+				m = date[utc + "Date"]();
+				break;
+			case "%H":
+				m = date[utc + "Hours"]();
+				break;
+			case "%M":
+				m = date[utc + "Minutes"]();
+				break;
+			case "%S":
+				m = date[utc + "Seconds"]();
+				break;
+			default:
+				return m.slice(1);
+		}
+		// add leading zeros
+		return ("0" + m).slice(-2);
+	});
+};
+
 exports.getTableNames = () => {
 	return new Promise((resolve, reject) => {
 		const sql = "SHOW TABLES";
@@ -32,7 +62,12 @@ exports.getTableNames = () => {
 
 exports.getTableData = (tableName) => {
 	return new Promise((resolve, reject) => {
-		const sql = "SELECT * FROM ??";
+		const now = formatDate(
+			new Date(Date.now() - 60 * 60 * 1000),
+			SQL_DATE_FORMAT
+		);
+		const sql = `SELECT * FROM ?? WHERE Time >= '${now}'`;
+		console.log(sql);
 		pool.getConnection((err, connection) => {
 			if (err) return reject(err);
 			connection.query(sql, [tableName], (err, results, fields) => {

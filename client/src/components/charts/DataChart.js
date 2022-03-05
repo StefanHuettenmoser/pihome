@@ -29,7 +29,8 @@ export default function DataChart({ data, ...props }) {
 					axisLabelYFormat={undefined}
 					axisLabelXFormat={undefined}
 					axisTitleX={"Test Chart"}
-					filled={undefined}
+					smooth
+					showPoints
 				/>
 			)}
 		</div>
