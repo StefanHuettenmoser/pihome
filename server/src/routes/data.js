@@ -41,7 +41,6 @@ router.post("/", (req, res) => {});
 router.get("/:tableName", async (req, res) => {
 	try {
 		data = await db.getTableData(req.params.tableName);
-		console.log(data);
 		return res.status(200).json(data);
 	} catch (err) {
 		console.log(err);

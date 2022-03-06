@@ -67,7 +67,6 @@ exports.getTableData = (tableName) => {
 			SQL_DATE_FORMAT
 		);
 		const sql = `SELECT * FROM ?? WHERE Time >= '${now}'`;
-		console.log(sql);
 		pool.getConnection((err, connection) => {
 			if (err) return reject(err);
 			connection.query(sql, [tableName], (err, results, fields) => {
