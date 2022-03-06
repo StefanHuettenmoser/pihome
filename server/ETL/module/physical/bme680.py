@@ -80,4 +80,9 @@ class BSEC_Sensor(PihomeActor):
             {"name": "co2", "get_value": lambda self: self.co2},
             {"name": "voc", "get_value": lambda self: self.voc},
             {"name": "gas_resistance", "get_value": lambda self: self.gas_resistance},
+            {"name": "iaq_accuracy", "get_value": lambda self: self.iaq_accuracy},
+            {
+                "name": "bsec_return_value",
+                "get_value": lambda self: self.bsec_return_value,
+            },
         ]
