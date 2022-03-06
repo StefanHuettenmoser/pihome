@@ -1,5 +1,7 @@
 import subprocess
 import threading
+from time import sleep
+from unicodedata import name
 
 from src.modules import PihomeActor
 from src.logic import Logic
@@ -14,6 +16,29 @@ class Debug(PihomeActor):
         state = self.state_logic.get_value(self.db)
         callback()
         return f"Debugging Output {self.name}: {state}"
+
+
+class DebugAsync(PihomeActor):
+    def __init__(self, pi, db, name, stage, every):
+        super().__init__(pi, db, name, stage, every)
+        self.value = -1
+        self.daemon_thread = threading.Thread(
+            target=self.daemon_function, args=(), daemon=True
+        )
+        self.daemon_thread.start()
+
+    def daemon_function(self):
+        import random
+
+        while True:
+            self.value = random.random()
+            print(self.value)
+            sleep(0.1)
+
+    def perform(self, callback):
+        sleep(5)
+        callback()
+        return f"Async-Debugging Output {self.name}: {self.value}"
 
 
 class TimeoutOutput(PihomeActor):
