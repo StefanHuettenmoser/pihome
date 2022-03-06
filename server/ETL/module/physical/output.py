@@ -32,7 +32,6 @@ class DebugAsync(PihomeActor):
 
         while True:
             self.value = random.random()
-            print(self.value)
             sleep(0.1)
 
     def perform(self, callback):
