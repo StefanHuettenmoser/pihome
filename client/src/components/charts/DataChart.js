@@ -2,6 +2,8 @@ import React, { useCallback, useMemo } from "react";
 
 import useResize from "../../hooks/useResize";
 
+import { formatDate } from "../../services/helpers/dateUtils";
+
 import LineChart from "./layouts/LineChart";
 
 export default function DataChart({ data, ...props }) {
@@ -17,6 +19,17 @@ export default function DataChart({ data, ...props }) {
 	}, [width, height]);
 	const xValue = useCallback((d) => new Date(d.Time), []);
 	const yValue = useCallback((d) => d.Value, []);
+	const axisLabelDateFormat = (tick_label) => {
+		const duration =
+			Math.max(...data.map(xValue)) - Math.min(...data.map(xValue));
+		let format = "%Y-%m-%dT%H:%M%SZ";
+		if (duration < 1000 * 60 * 60 * 24 * 7) {
+			format = "%d.%m. %H:00";
+		} else if (duration < 1000 * 60 * 60 * 24) {
+			format = "%H:%M";
+		}
+		return formatDate(new Date(tick_label), format);
+	};
 	return (
 		<div ref={ref} {...props}>
 			{data && (
@@ -27,7 +40,7 @@ export default function DataChart({ data, ...props }) {
 					dimensions={dimensions}
 					yDomain={undefined}
 					axisLabelYFormat={undefined}
-					axisLabelXFormat={undefined}
+					axisLabelXFormat={axisLabelDateFormat}
 					axisTitleX={"Test Chart"}
 					smooth
 					showPoints
