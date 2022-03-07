@@ -39,11 +39,18 @@ router.post("/", (req, res) => {});
 // *******
 //
 router.get("/:tableName", async (req, res) => {
+	const BASE_DURATION = 60 * 60 * 1000;
+	const from = db.formatDate(new Date(Date.now() - BASE_DURATION));
+	const where = ` WHERE Time >= '${from}'`;
 	try {
-		data = await db.getTableData(req.params.tableName);
+		data = await db.getTableData(req.params.tableName, where);
 		return res.status(200).json(data);
 	} catch (err) {
-		console.log(err);
+		if (err.code === "ER_NO_SUCH_TABLE") {
+			console.log(`No table called ${req.params.tableName}`);
+		} else {
+			console.log(err);
+		}
 		return res.status(500).json(errMsg(500));
 	}
 });
@@ -51,12 +58,12 @@ router.get("/:tableName", async (req, res) => {
 // CHANGE ONE
 // **********
 //
-router.put("/:id", async (req, res) => {});
+router.put("/:_id", async (req, res) => {});
 
 // DELETE ONE
 // ********
 //
-router.delete("/:id", async (req, res) => {});
+router.delete("/:_id", async (req, res) => {});
 
 // EXPORT
 // ================================================================================================
