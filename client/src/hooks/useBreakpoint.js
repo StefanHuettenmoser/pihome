@@ -10,7 +10,6 @@ const getBreakpoint = (width, theme) => {
 			breakpoint = key;
 		}
 	});
-	console.log(theme.breakpoints.values);
 	return breakpoint;
 };
 
@@ -21,7 +20,6 @@ const useBreakpoint = () => {
 		return getBreakpoint(width, theme);
 	}, [width]);
 
-	console.log(breakpoint);
 	return breakpoint;
 };
 export default useBreakpoint;

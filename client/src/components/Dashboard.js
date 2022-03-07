@@ -1,19 +1,13 @@
-import React, { useState, useCallback, useMemo } from "react";
-
-import Container from "@mui/material/Container";
+import React, { useState, useCallback } from "react";
 
 import useWidgets from "../hooks/useWidgets";
 
 import Widget from "./Widget";
 
-import widgetsConfig from "../test_data/widgetsConfig";
-
 const Dashboard = ({ columns = 4, rowHeight = 120, gap = 10 }) => {
 	const [editMode, setEditMode] = useState(false);
-	const [widgetLayouts, move, resize, setArguments] = useWidgets(
-		widgetsConfig,
-		columns
-	);
+	const [widgetLayouts, move, resize, setArguments, addWidget, deleteWidget] =
+		useWidgets(columns);
 	const handleEditModeChange = useCallback(
 		(e) => {
 			setEditMode(e.target.checked);
@@ -41,9 +35,11 @@ const Dashboard = ({ columns = 4, rowHeight = 120, gap = 10 }) => {
 						move={move}
 						resize={resize}
 						setArguments={setArguments}
+						deleteWidget={deleteWidget}
 					/>
 				))}
 			</div>
+			<button onClick={addWidget}>Add One</button>
 			<input
 				key="select-dashboard-mode"
 				type="checkbox"

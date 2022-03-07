@@ -1,24 +1,21 @@
 import { useState, useMemo, useEffect, useCallback, useContext } from "react";
 
+import useREST from "./useREST";
+
 import DashboardService from "../services/DashboardService";
-import { DataContext } from "../context/DataContext";
+import WidgetService from "../services/WidgetService";
 
-const sortByPosition = (list) => {
-	list.sort((a, b) => a.position - b.position);
-};
-
-export default function useWidgets(initWidgetsConfig, columns) {
-	const [widgetsConfig, setWidgetsConfig] = useState(() => {
-		sortByPosition(initWidgetsConfig);
-		return initWidgetsConfig;
-	});
+export default function useWidgets(columns) {
+	const [widgetsConfig, _getOne, addOne, changeOne, deleteOne, update] =
+		useREST(WidgetService);
 
 	const widgetLayouts = useMemo(() => {
+		if (!widgetsConfig) return;
 		return DashboardService.calculateLayout(widgetsConfig, columns);
 	}, [columns, widgetsConfig]);
 
 	const move = useCallback(
-		(_id, step) => {
+		async (_id, step) => {
 			console.log("Move", _id, step);
 			if (Math.abs(step) > 1) {
 				console.warn(`Step size gt ${step} is not supported`);
@@ -40,55 +37,59 @@ export default function useWidgets(initWidgetsConfig, columns) {
 			const majorIndexWidget = widgetsConfig[majorListIndex];
 			majorIndexWidget.position = minorPosition;
 
-			setWidgetsConfig((prev) => {
-				const changedWidgetsConfig = [
-					...prev.slice(0, minorListIndex),
-					minorIndexWidget,
-					majorIndexWidget,
-					...prev.slice(majorListIndex + 1),
-				];
-				sortByPosition(changedWidgetsConfig);
-				return changedWidgetsConfig;
-			});
+			await changeOne(minorIndexWidget._id, minorIndexWidget);
+			await changeOne(majorIndexWidget._id, majorIndexWidget);
+			await update();
 		},
-		[widgetsConfig, setWidgetsConfig]
+		[widgetsConfig, changeOne, update]
 	);
 
 	const resize = useCallback(
-		(_id, width, height) => {
+		async (_id, width, height) => {
 			console.log("Resize", _id, width, height);
 
 			const listIndex = widgetsConfig.map((e) => e._id).indexOf(_id);
 			const changedWidget = widgetsConfig[listIndex];
 			changedWidget.height = height;
 			changedWidget.width = width;
-			setWidgetsConfig((prev) => [
-				...prev.slice(0, listIndex),
-				changedWidget,
-				...prev.slice(listIndex + 1),
-			]);
+			await changeOne(changedWidget._id, changedWidget);
+			await update();
 		},
-		[widgetsConfig, setWidgetsConfig]
+		[widgetsConfig, changeOne, update]
 	);
 
 	const setArguments = useCallback(
-		(_id, args) => {
+		async (_id, args) => {
 			const listIndex = widgetsConfig.map((e) => e._id).indexOf(_id);
 			console.log("Found @", listIndex);
 			const changedWidget = widgetsConfig[listIndex];
 			console.log(changedWidget);
-			changedWidget.widget.args = { ...changedWidget.widget.args, ...args };
-			setWidgetsConfig((prev) => [
-				...prev.slice(0, listIndex),
-				changedWidget,
-				...prev.slice(listIndex + 1),
-			]);
+			changedWidget.args = { ...changedWidget.args, ...args };
+			await changeOne(changedWidget._id, changedWidget);
+			await update();
 		},
-		[widgetsConfig, setWidgetsConfig]
+		[widgetsConfig, changeOne, update]
 	);
 
+	const addWidget = useCallback(async () => {
+		const position = Math.max(...widgetsConfig.map((e) => e.position)) + 1;
+		const width = 1;
+		const height = 1;
+		const widget_id = 1;
+		const args = { referenceTable: "", title: "New Widget" };
+		await addOne({ position, width, height, widget_id, args });
+		await update();
+	}, [widgetsConfig, addOne, update]);
+
+	const deleteWidget = useCallback(
+		async (_id) => {
+			await deleteOne(_id);
+			await update();
+		},
+		[deleteOne, update]
+	);
 	// TODO: REMOVE
 	// TODO: ADD
 
-	return [widgetLayouts, move, resize, setArguments];
+	return [widgetLayouts, move, resize, setArguments, addWidget, deleteWidget];
 }

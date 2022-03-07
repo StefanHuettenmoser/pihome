@@ -6,6 +6,7 @@ import DashboardService from "../services/DashboardService";
 import { DataContext } from "../context/DataContext";
 
 import DataChart from "./charts/DataChart";
+import useDebounce from "../hooks/useDebounce";
 
 const Widget = ({
 	widgetLayout,
@@ -13,6 +14,7 @@ const Widget = ({
 	move,
 	resize,
 	setArguments,
+	deleteWidget,
 	style = {},
 	...props
 }) => {
@@ -20,6 +22,11 @@ const Widget = ({
 		useContext(DataContext);
 	const [newHeight, setNewHeight] = useState(widgetLayout.height);
 	const [newWidth, setNewWidth] = useState(widgetLayout.width);
+	const [newName, setNewName] = useState(widgetLayout.args.title);
+	const debouncedNewName = useDebounce(newName, 300);
+	useEffect(() => {
+		setArguments(widgetLayout._id, { title: debouncedNewName });
+	}, [debouncedNewName]);
 
 	const handleSelect = useCallback(
 		(tableName) => {
@@ -29,9 +36,9 @@ const Widget = ({
 		[setArguments, widgetLayout._id]
 	);
 	useEffect(() => {
-		subscribe(widgetLayout.widget.args.referenceTable);
-		return () => unsubscribe(widgetLayout.widget.args.referenceTable);
-	}, [widgetLayout.widget.args.referenceTable]);
+		subscribe(widgetLayout.args.referenceTable);
+		return () => unsubscribe(widgetLayout.args.referenceTable);
+	}, [widgetLayout.args.referenceTable]);
 
 	return (
 		<div
@@ -54,16 +61,23 @@ const Widget = ({
 					flexDirection: "column",
 				}}
 			>
-				<Typography key={`${widgetLayout._id}-title`} variant="subtitle2">
-					{widgetLayout.widget.args.title}
-				</Typography>
-				{editMode && (
+				{!editMode ? (
+					<Typography key={`${widgetLayout._id}-title`} variant="subtitle2">
+						{widgetLayout.args.title}
+					</Typography>
+				) : (
 					<>
+						<input
+							key={`${widgetLayout._id}-title-edit`}
+							type="text"
+							value={newName}
+							onChange={(e) => setNewName(e.target.value)}
+						/>
 						{tableNames && (
 							<select
 								key={`widget-dropdown-${widgetLayout._id}`}
 								onChange={(e) => handleSelect(e.target.value)}
-								value={widgetLayout.widget.args.referenceTable}
+								value={widgetLayout.args.referenceTable}
 							>
 								{tableNames.map((tableName) => (
 									<option key={`widget-dropdown-element-${tableName}`}>
@@ -128,10 +142,22 @@ const Widget = ({
 								resize
 							</button>
 						</div>
+						<div key={`${widgetLayout._id}-delete-button-frame`}>
+							<button
+								key={`${widgetLayout._id}-delete-button`}
+								style={{
+									background: "red",
+									padding: "0em 1em",
+								}}
+								onClick={() => deleteWidget(widgetLayout._id)}
+							>
+								Delete
+							</button>
+						</div>
 					</>
 				)}
 				<DataChart
-					data={getData(widgetLayout.widget.args.referenceTable)}
+					data={getData(widgetLayout.args.referenceTable)}
 					style={{
 						height: "100%",
 						width: "100%",
