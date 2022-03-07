@@ -53,6 +53,10 @@ const initDB = async () => {
 			],
 			true
 		);
+		// CREATE ADMIN IF NOT EXISTS
+		await db.handleRequest(
+			"INSERT INTO $users (username) SELECT 'admin' WHERE NOT EXISTS(SELECT * FROM $users WHERE _id=1);"
+		);
 	} catch (err) {
 		console.error(err);
 	}
