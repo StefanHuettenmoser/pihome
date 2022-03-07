@@ -13,6 +13,8 @@ app.use(express.json());
 // load all routes form the routes folder
 const dataRouter = require("./routes/data");
 app.use("/api/v1/data", dataRouter);
+const widgetRouter = require("./routes/widget");
+app.use("/api/v1/widget", widgetRouter);
 
 // not found route
 app.get("/api", (req, res) => res.send("Pihome Backend Server API"));
