@@ -4,6 +4,13 @@ from datetime import datetime
 TIME = "Time"
 VALUE = "Value"
 
+SYSTEM_PREFIX = "$"
+
+
+def check_table_name(tableName):
+    if tableName[0] == SYSTEM_PREFIX:
+        raise ValueError(f"WARNING: Table name can not start with a {SYSTEM_PREFIX}")
+
 
 class Database:
 
@@ -21,19 +28,22 @@ class Database:
         )
         self.conn.autocommit = True
 
-    def get_all(self, table):
-        sql = f"SELECT * FROM {table}"
+    def get_all(self, tableName):
+        check_table_name(tableName)
+        sql = f"SELECT * FROM {tableName}"
         return self.___execute(sql)
 
-    def get_last(self, table, n=1):
-        sql = f"SELECT * FROM {table} ORDER BY {TIME} DESC LIMIT {n}"
+    def get_last(self, tableName, n=1):
+        check_table_name(tableName)
+        sql = f"SELECT * FROM {tableName} ORDER BY {TIME} DESC LIMIT {n}"
         values = self.___execute(sql)
         return self.__parse(values)
 
-    def get_between(self, table, start_date: datetime, end_date: datetime):
+    def get_between(self, tableName, start_date: datetime, end_date: datetime):
 
+        check_table_name(tableName)
         sql = f"""
-        SELECT * FROM {table}
+        SELECT * FROM {tableName}
         WHERE {TIME} BETWEEN
             "{start_date.strftime(self.SQL_DATE_FORMAT)}"
             AND "{end_date.strftime(self.SQL_DATE_FORMAT)}"
@@ -41,27 +51,30 @@ class Database:
         values = self.___execute(sql)
         return self.__parse(values)
 
-    def add_one(self, table, value):
+    def add_one(self, tableName, value):
+        check_table_name(tableName)
         date = datetime.now()
         sql = f"""
-        INSERT INTO {table} ({TIME}, {VALUE})
+        INSERT INTO {tableName} ({TIME}, {VALUE})
         VALUES 
         {self.__format_input(date, value)}
         """
         self.___execute(sql)
 
-    def add_many(self, table, data, replace=False):
+    def add_many(self, tableName, data, replace=False):
+        check_table_name(tableName)
         SEP = ",\n"
         sql = f"""
-        {"INSERT" if not replace else "REPLACE"} INTO {table} ({TIME}, {VALUE})
+        {"INSERT" if not replace else "REPLACE"} INTO {tableName} ({TIME}, {VALUE})
         VALUES
         {SEP.join(self.__format_input(x["date"], x["value"]) for x in data)}
         """
         self.___execute(sql)
 
-    def init_table(self, table, value_type):
+    def init_table(self, tableName, value_type):
+        check_table_name(tableName)
         sql = f"""
-        CREATE TABLE if not exists {table} (
+        CREATE TABLE if not exists {tableName} (
             {TIME} DATETIME NOT NULL, 
             {VALUE} {value_type} NOT NULL, 
             PRIMARY KEY ({TIME}) 
@@ -69,8 +82,9 @@ class Database:
         """
         self.___execute(sql)
 
-    def delete_table(self, table):
-        sql = f"DROP TABLE {table}"
+    def delete_table(self, tableName):
+        check_table_name(tableName)
+        sql = f"DROP TABLE {tableName}"
         self.___execute(sql)
 
     def ___execute(self, sql):
