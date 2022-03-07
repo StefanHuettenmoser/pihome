@@ -54,6 +54,7 @@ exports.formatDate = (date) => {
 };
 
 const handleRequest = (sql, values, wrap) => {
+	console.log("Handle", sql, values);
 	return new Promise((resolve, reject) => {
 		pool.getConnection((err, connection) => {
 			if (err) return reject(err);
