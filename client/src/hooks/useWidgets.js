@@ -72,7 +72,10 @@ export default function useWidgets(columns) {
 	);
 
 	const addWidget = useCallback(async () => {
-		const position = Math.max(...widgetsConfig.map((e) => e.position)) || 0 + 1;
+		// Math.max(...[]) => -Infinity
+		// ---BUT---
+		// Math.max(...[], 0) => 0
+		const position = Math.max(...widgetsConfig.map((e) => e.position), 0) + 1;
 		const width = 1;
 		const height = 1;
 		const widget_id = 1;
