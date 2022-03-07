@@ -17,7 +17,13 @@ class Database:
     SQL_DATE_FORMAT = "%Y-%m-%d %H:%M:%S"
 
     def __init__(self, host, database, user, password, reset=False):
-        if reset:
+        if (
+            reset
+            and input(
+                "Type 'reset' to reset the whole database, including all config files: "
+            )
+            == "reset"
+        ):
             Database.reset_database(host, database, user, password)
         # create database if it not allready exists
         Database.create_database(host, database, user, password)
