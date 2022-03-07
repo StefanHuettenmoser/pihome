@@ -55,7 +55,11 @@ const initDB = async () => {
 		);
 		// CREATE ADMIN IF NOT EXISTS
 		await db.handleRequest(
-			"INSERT INTO $users (username) SELECT 'admin' WHERE NOT EXISTS(SELECT * FROM $users WHERE _id=1);"
+			`INSERT INTO ${USERS_TABLE_NAME} (username) SELECT 'admin' WHERE NOT EXISTS(SELECT * FROM ${USERS_TABLE_NAME} WHERE _id=1);`
+		);
+		// CREATE DUMMY WIDGET IF NOT EXISTS
+		await db.handleRequest(
+			`INSERT INTO ${WIDGETS_TABLE_NAME} (widget_name) SELECT 'LineChart' WHERE NOT EXISTS(SELECT * FROM ${WIDGETS_TABLE_NAME} WHERE _id=1);`
 		);
 	} catch (err) {
 		console.error(err);
