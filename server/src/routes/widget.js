@@ -64,7 +64,7 @@ initDB();
 //
 router.get("/", async (req, res) => {
 	const sql =
-		`SELECT ${USER_WIDGETS_TABLE_NAME}._id, ${USER_WIDGETS_TABLE_NAME}.width, ${USER_WIDGETS_TABLE_NAME}.height, ${USER_WIDGETS_TABLE_NAME}.position, ${USER_WIDGETS_TABLE_NAME}.args, ${WIDGETS_TABLE_NAME}.widget_name \n` +
+		`SELECT ${USER_WIDGETS_TABLE_NAME}._id, ${USER_WIDGETS_TABLE_NAME}.width, ${USER_WIDGETS_TABLE_NAME}.height, ${USER_WIDGETS_TABLE_NAME}.position, ${USER_WIDGETS_TABLE_NAME}.args, ${WIDGETS_TABLE_NAME}.widget_name, ${USER_WIDGETS_TABLE_NAME}.widget_id\n` +
 		`FROM ${USER_WIDGETS_TABLE_NAME} \n` +
 		`JOIN ${WIDGETS_TABLE_NAME} \n` +
 		`ON ${USER_WIDGETS_TABLE_NAME}.widget_id=${WIDGETS_TABLE_NAME}._id \n` +
@@ -92,7 +92,8 @@ router.post("/", async (req, res) => {
 		const result = await db.addTableData(
 			USER_WIDGETS_TABLE_NAME,
 			["user_id", "widget_id", "width", "height", "position", "args"],
-			[_user_id, widget_id, width, height, position, JSON.stringify(args)]
+			[_user_id, widget_id, width, height, position, JSON.stringify(args)],
+			true
 		);
 		return res.status(201).json(result);
 	} catch (err) {
@@ -118,6 +119,7 @@ router.get("/:_id", async (req, res) => {
 router.put("/:_id", async (req, res) => {
 	const { _id } = req.params;
 	const { width, height, position, args, widget_id } = req.body;
+	console.log("CHANGE WIDGET", _id, req.body);
 	console.log(req.body);
 	try {
 		const result = await db.updateTableData(
@@ -129,7 +131,8 @@ router.put("/:_id", async (req, res) => {
 				position,
 				args: JSON.stringify(args),
 			},
-			`_id = ${mysql.escape(_id)} AND user_id = ${mysql.escape(_user_id)}`
+			`_id = ${mysql.escape(_id)} AND user_id = ${mysql.escape(_user_id)}`,
+			true
 		);
 		return res.status(200).json(result);
 	} catch (err) {
@@ -147,7 +150,8 @@ router.delete("/:_id", async (req, res) => {
 	try {
 		const result = await db.deleteTableData(
 			USER_WIDGETS_TABLE_NAME,
-			`_id = ${mysql.escape(_id)}`
+			`_id = ${mysql.escape(_id)}`,
+			true
 		);
 		return res.status(201).json(result);
 	} catch (err) {
