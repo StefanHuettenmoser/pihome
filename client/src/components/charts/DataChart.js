@@ -23,10 +23,10 @@ export default function DataChart({ data, ...props }) {
 		const duration =
 			Math.max(...data.map(xValue)) - Math.min(...data.map(xValue));
 		let format = "%Y-%m-%dT%H:%M%SZ";
-		if (duration < 1000 * 60 * 60 * 24 * 7) {
-			format = "%d.%m. %H:00";
-		} else if (duration < 1000 * 60 * 60 * 24) {
+		if (duration < 1000 * 60 * 60 * 24) {
 			format = "%H:%M";
+		} else if (duration < 1000 * 60 * 60 * 24 * 7) {
+			format = "%d.%m. %H:00";
 		}
 		return formatDate(new Date(tick_label), format);
 	};
