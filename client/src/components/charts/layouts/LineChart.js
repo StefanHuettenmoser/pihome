@@ -2,7 +2,14 @@ import styles from "../../../css/modules/chart.module.css";
 
 import React, { useMemo } from "react";
 
-import { extent, scaleLinear, line, curveNatural, curveLinear } from "d3";
+import {
+	extent,
+	scaleLinear,
+	scaleTime,
+	line,
+	curveNatural,
+	curveLinear,
+} from "d3";
 
 import { AxisLinearLeft, AxisLinearBottom } from "../axis/AxisLinear";
 
@@ -29,7 +36,7 @@ export default function LineChart({
 	);
 
 	const xScale = useMemo(
-		() => scaleLinear().domain(extent(data, xValue)).range([0, innerWidth]),
+		() => scaleTime().domain(extent(data, xValue)).range([0, innerWidth]),
 		[data, xValue, innerWidth]
 	);
 

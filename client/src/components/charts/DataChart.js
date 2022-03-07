@@ -22,11 +22,11 @@ export default function DataChart({ data, ...props }) {
 	const axisLabelDateFormat = (tick_label) => {
 		const duration =
 			Math.max(...data.map(xValue)) - Math.min(...data.map(xValue));
-		let format = "%Y-%m-%dT%H:%M%SZ";
+		let format = "%m.%Y";
 		if (duration < 1000 * 60 * 60 * 24) {
 			format = "%H:%M";
-		} else if (duration < 1000 * 60 * 60 * 24 * 7) {
-			format = "%d.%m. %H:00";
+		} else if (duration < 1000 * 60 * 60 * 24 * 31 * 4) {
+			format = "%d.%m.";
 		}
 		return formatDate(new Date(tick_label), format);
 	};
