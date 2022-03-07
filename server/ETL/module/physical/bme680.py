@@ -66,7 +66,8 @@ class BSEC_Sensor(PihomeActor):
 
         for dimension in self.get_dimensions():
             self.db.init_table(
-                self.get_table_name(self.name, dimension["name"]), "FLOAT"
+                self.get_table_name(self.name, dimension["name"]),
+                dimension["value_type"],
             )
 
         self.daemon_thread = threading.Thread(
