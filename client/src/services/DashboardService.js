@@ -1,19 +1,19 @@
 const DashboardService = {
-	calculateLayout: (widgetsConfig, n_columns) => {
+	calculateLayout: (rawUserWidgets, n_columns) => {
 		const gridArray = [];
-		const widgetLayouts = [];
-		widgetsConfig.sort((a, b) => a.position - b.position);
-		widgetsConfig.forEach((widgetConfig) => {
-			widgetLayouts.push({
-				...widgetConfig,
-				...getWidgetPlacement(widgetConfig, gridArray, n_columns),
+		const userWidgets = [];
+		rawUserWidgets.sort((a, b) => a.position - b.position);
+		rawUserWidgets.forEach((rawUserWidget) => {
+			userWidgets.push({
+				...rawUserWidget,
+				...getWidgetPlacement(rawUserWidget, gridArray, n_columns),
 			});
 		});
-		widgetLayouts.sort((a, b) => a._id - b._id);
-		return widgetLayouts;
+		userWidgets.sort((a, b) => a._id - b._id);
+		return userWidgets;
 	},
-	makeStyle: (widgetLayout, cellDimension, gap) => {
-		const { row, column, height, width } = widgetLayout;
+	makeStyle: (userWidget, cellDimension, gap) => {
+		const { row, column, height, width } = userWidget;
 		return {
 			position: "absolute",
 			width: `${width * cellDimension.width - gap}px`,
@@ -25,8 +25,8 @@ const DashboardService = {
 	},
 };
 
-const getWidgetPlacement = (widgetConfig, gridArray, n_columns) => {
-	const widgetPlacement = findPlace(widgetConfig, gridArray);
+const getWidgetPlacement = (rawUserWidget, gridArray, n_columns) => {
+	const widgetPlacement = findPlace(rawUserWidget, gridArray);
 	// IF found placement: occupy place and return placement
 	if (widgetPlacement) {
 		occupyPlace(widgetPlacement, gridArray);
@@ -34,7 +34,7 @@ const getWidgetPlacement = (widgetConfig, gridArray, n_columns) => {
 	}
 	// ELSE add row and try again
 	gridArray.push(Array(n_columns).fill(true));
-	return getWidgetPlacement(widgetConfig, gridArray, n_columns);
+	return getWidgetPlacement(rawUserWidget, gridArray, n_columns);
 };
 
 const findPlace = ({ width, height }, gridArray) => {

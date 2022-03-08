@@ -8,7 +8,7 @@ import Widget from "./Widget";
 const Dashboard = ({ columns = 4, rowHeight = 120, gap = 10 }) => {
 	const [ref, width] = useResize();
 	const [editMode, setEditMode] = useState(false);
-	const [widgetLayouts, move, resize, setArguments, addWidget, deleteWidget] =
+	const [userWidgets, move, resize, setArguments, addWidget, deleteWidget] =
 		useWidgets(columns);
 	const handleEditModeChange = useCallback(
 		(e) => {
@@ -24,12 +24,12 @@ const Dashboard = ({ columns = 4, rowHeight = 120, gap = 10 }) => {
 		() =>
 			rowHeight *
 				Math.max(
-					...(widgetLayouts || [1]).map(
-						(widgetLayout) => widgetLayout.row + widgetLayout.height
+					...(userWidgets || [1]).map(
+						(userWidget) => userWidget.row + userWidget.height
 					)
 				) +
 			2 * gap,
-		[widgetLayouts, rowHeight]
+		[userWidgets, rowHeight]
 	);
 
 	return (
@@ -45,10 +45,10 @@ const Dashboard = ({ columns = 4, rowHeight = 120, gap = 10 }) => {
 				ref={ref}
 			>
 				{cellDimension &&
-					widgetLayouts?.map((widgetLayout) => (
+					userWidgets?.map((userWidget) => (
 						<Widget
-							key={`dashboard-widget-${widgetLayout._id}`}
-							widgetLayout={widgetLayout}
+							key={`dashboard-widget-${userWidget._id}`}
+							userWidget={userWidget}
 							cellDimension={cellDimension}
 							gap={gap}
 							editMode={editMode}

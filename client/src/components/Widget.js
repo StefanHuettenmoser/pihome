@@ -9,7 +9,7 @@ import DataChart from "./charts/DataChart";
 import useDebounce from "../hooks/useDebounce";
 
 const Widget = ({
-	widgetLayout,
+	userWidget,
 	cellDimension,
 	gap,
 	editMode,
@@ -20,33 +20,34 @@ const Widget = ({
 	style = {},
 	...props
 }) => {
+	console.log(userWidget);
 	const { tableNames, getData, subscribe, unsubscribe } =
 		useContext(DataContext);
-	const [newHeight, setNewHeight] = useState(widgetLayout.height);
-	const [newWidth, setNewWidth] = useState(widgetLayout.width);
-	const [newName, setNewName] = useState(widgetLayout.args.title);
+	const [newHeight, setNewHeight] = useState(userWidget.height);
+	const [newWidth, setNewWidth] = useState(userWidget.width);
+	const [newName, setNewName] = useState(userWidget.args.title);
 	const debouncedNewName = useDebounce(newName, 300);
 	useEffect(() => {
-		setArguments(widgetLayout._id, { title: debouncedNewName });
+		setArguments(userWidget._id, { title: debouncedNewName });
 	}, [debouncedNewName]);
 
 	const handleSelect = useCallback(
 		(tableName) => {
 			console.log("handleSelect");
-			setArguments(widgetLayout._id, { referenceTable: tableName });
+			setArguments(userWidget._id, { referenceTable: tableName });
 		},
-		[setArguments, widgetLayout._id]
+		[setArguments, userWidget._id]
 	);
 	useEffect(() => {
-		subscribe(widgetLayout.args.referenceTable);
-		return () => unsubscribe(widgetLayout.args.referenceTable);
-	}, [widgetLayout.args.referenceTable]);
+		subscribe(userWidget.args.referenceTable);
+		return () => unsubscribe(userWidget.args.referenceTable);
+	}, [userWidget.args.referenceTable]);
 
 	return (
 		<div
 			style={{
 				...style,
-				...DashboardService.makeStyle(widgetLayout, cellDimension, gap),
+				...DashboardService.makeStyle(userWidget, cellDimension, gap),
 				background: "white",
 				padding: "0.5em",
 				overflow: "hidden",
@@ -57,7 +58,7 @@ const Widget = ({
 			{...props}
 		>
 			<div
-				key={`widget-container-${widgetLayout._id}`}
+				key={`widget-container-${userWidget._id}`}
 				style={{
 					height: "100%",
 					width: "100%",
@@ -66,22 +67,22 @@ const Widget = ({
 				}}
 			>
 				{!editMode ? (
-					<Typography key={`${widgetLayout._id}-title`} variant="subtitle2">
-						{widgetLayout.args.title}
+					<Typography key={`${userWidget._id}-title`} variant="subtitle2">
+						{userWidget.args.title}
 					</Typography>
 				) : (
 					<>
 						<input
-							key={`${widgetLayout._id}-title-edit`}
+							key={`${userWidget._id}-title-edit`}
 							type="text"
 							value={newName}
 							onChange={(e) => setNewName(e.target.value)}
 						/>
 						{tableNames && (
 							<select
-								key={`widget-dropdown-${widgetLayout._id}`}
+								key={`widget-dropdown-${userWidget._id}`}
 								onChange={(e) => handleSelect(e.target.value)}
-								value={widgetLayout.args.referenceTable}
+								value={userWidget.args.referenceTable}
 							>
 								{tableNames.map((tableName) => (
 									<option key={`widget-dropdown-element-${tableName}`}>
@@ -92,30 +93,30 @@ const Widget = ({
 						)}
 						<div style={{ display: "flex" }}>
 							<button
-								key={`${widgetLayout._id}-button-back`}
-								onClick={() => move(widgetLayout._id, -1)}
+								key={`${userWidget._id}-button-back`}
+								onClick={() => move(userWidget._id, -1)}
 							>
 								&lt;
 							</button>
-							<span key={`${widgetLayout._id}-current-position`}>
-								&nbsp;{widgetLayout.position}&nbsp;
+							<span key={`${userWidget._id}-current-position`}>
+								&nbsp;{userWidget.position}&nbsp;
 							</span>
 							<button
-								key={`${widgetLayout._id}-button-forward`}
-								onClick={() => move(widgetLayout._id, 1)}
+								key={`${userWidget._id}-button-forward`}
+								onClick={() => move(userWidget._id, 1)}
 							>
 								&gt;
 							</button>
 							<label
-								key={`${widgetLayout._id}-width-label`}
-								htmlFor={`${widgetLayout._id}-width`}
+								key={`${userWidget._id}-width-label`}
+								htmlFor={`${userWidget._id}-width`}
 							>
 								w:
 							</label>
 
 							<input
-								name={`${widgetLayout._id}-width`}
-								key={`${widgetLayout._id}-width-input`}
+								name={`${userWidget._id}-width`}
+								key={`${userWidget._id}-width-input`}
 								type="number"
 								step="1"
 								style={{ width: "3.2em" }}
@@ -124,18 +125,18 @@ const Widget = ({
 								onChange={(e) => {
 									const _newWidth = +e.target.value;
 									setNewWidth(_newWidth);
-									resize(widgetLayout._id, _newWidth, newHeight);
+									resize(userWidget._id, _newWidth, newHeight);
 								}}
 							/>
 							<label
-								key={`${widgetLayout._id}-height-label`}
-								htmlFor={`${widgetLayout._id}-height-input`}
+								key={`${userWidget._id}-height-label`}
+								htmlFor={`${userWidget._id}-height-input`}
 							>
 								h:
 							</label>
 							<input
-								name={`${widgetLayout._id}-height`}
-								key={`${widgetLayout._id}-height-input`}
+								name={`${userWidget._id}-height`}
+								key={`${userWidget._id}-height-input`}
 								type="number"
 								step="1"
 								style={{ width: "3.2em" }}
@@ -144,26 +145,26 @@ const Widget = ({
 								onChange={(e) => {
 									const _newHeight = +e.target.value;
 									setNewHeight(_newHeight);
-									resize(widgetLayout._id, newWidth, _newHeight);
+									resize(userWidget._id, newWidth, _newHeight);
 								}}
 							/>
 						</div>
-						<div key={`${widgetLayout._id}-delete-button-frame`}>
+						<div key={`${userWidget._id}-delete-button-frame`}>
 							<button
-								key={`${widgetLayout._id}-delete-button`}
+								key={`${userWidget._id}-delete-button`}
 								style={{
 									background: "red",
 									padding: "0em 1em",
 								}}
-								onClick={() => deleteWidget(widgetLayout._id)}
+								onClick={() => deleteWidget(userWidget._id)}
 							>
-								Delete {widgetLayout._id}
+								Delete {userWidget._id}
 							</button>
 						</div>
 					</>
 				)}
 				<DataChart
-					data={getData(widgetLayout.args.referenceTable)}
+					data={getData(userWidget.args.referenceTable)}
 					style={{
 						height: "100%",
 						width: "100%",
