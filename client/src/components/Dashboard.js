@@ -22,12 +22,13 @@ const Dashboard = ({ columns = 4, rowHeight = 120, gap = 10 }) => {
 
 	const height = useMemo(
 		() =>
-			(gap + rowHeight) *
-			Math.max(
-				...(widgetLayouts || [1]).map(
-					(widgetLayout) => widgetLayout.row + widgetLayout.height
-				)
-			),
+			rowHeight *
+				Math.max(
+					...(widgetLayouts || [1]).map(
+						(widgetLayout) => widgetLayout.row + widgetLayout.height
+					)
+				) +
+			2 * gap,
 		[widgetLayouts, rowHeight]
 	);
 
