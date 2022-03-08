@@ -28,8 +28,9 @@ export default function useWidgets(columns) {
 	const move = useCallback(
 		async (_id, step) => {
 			console.log("Move", _id, step);
-			if (Math.abs(step) > 1) {
+			if (Math.abs(step) !== 1) {
 				console.warn(`Step size gt ${step} is not supported`);
+				step = step ? 1 : -1;
 			}
 			const listIndex = rawUserWidgets.map((e) => e._id).indexOf(_id);
 
