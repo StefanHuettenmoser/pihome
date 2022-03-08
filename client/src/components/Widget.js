@@ -118,10 +118,14 @@ const Widget = ({
 								key={`${widgetLayout._id}-width-input`}
 								type="number"
 								step="1"
-								style={{ width: "4em" }}
+								style={{ width: "3.2em" }}
 								value={newWidth}
 								min={1}
-								onChange={(e) => setNewWidth(+e.target.value)}
+								onChange={(e) => {
+									const _newWidth = +e.target.value;
+									setNewWidth(_newWidth);
+									resize(widgetLayout._id, _newWidth, newHeight);
+								}}
 							/>
 							<label
 								key={`${widgetLayout._id}-height-label`}
@@ -134,17 +138,15 @@ const Widget = ({
 								key={`${widgetLayout._id}-height-input`}
 								type="number"
 								step="1"
-								style={{ width: "4em" }}
+								style={{ width: "3.2em" }}
 								value={newHeight}
 								min={1}
-								onChange={(e) => setNewHeight(+e.target.value)}
+								onChange={(e) => {
+									const _newHeight = +e.target.value;
+									setNewHeight(_newHeight);
+									resize(widgetLayout._id, newWidth, _newHeight);
+								}}
 							/>
-							<button
-								key={`${widgetLayout._id}-resize-button`}
-								onClick={() => resize(widgetLayout._id, newWidth, newHeight)}
-							>
-								resize
-							</button>
 						</div>
 						<div key={`${widgetLayout._id}-delete-button-frame`}>
 							<button
