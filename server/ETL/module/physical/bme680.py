@@ -108,10 +108,11 @@ class BSEC_Sensor(PihomeActor):
             3: "Sensor is calibrated.",
         }
         if self.iaq_accuracy == -1:
+            self.db.add_one("iaq_accuracy", self.iaq_accuracy)
             callback()
             return output[-1]
 
-        for dimension in self.get_dimensions(waiting=self.iaq_accuracy < 3):
+        for dimension in self.get_dimensions(waiting=self.iaq_accuracy < 2):
             table_name = self.get_table_name(self.name, dimension["name"])
             value = dimension["get_value"](self)
             self.db.add_one(table_name, value)
