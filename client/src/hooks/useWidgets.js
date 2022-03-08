@@ -9,8 +9,19 @@ export default function useWidgets(columns) {
 	const [widgetsConfig, _getOne, addOne, changeOne, deleteOne, update] =
 		useREST(WidgetService);
 
+	const fixPositions = useCallback(() => {
+		widgetsConfig.sort((a, b) => a.position - b.position);
+		widgetsConfig.forEach((widgetConfig, i) => {
+			if (widgetConfig.position === i) return;
+			console.warn("Found Widget with wrong position");
+			widgetConfig.position = i;
+			changeOne(widgetConfig._id, widgetConfig);
+		});
+	}, [widgetsConfig]);
+
 	const widgetLayouts = useMemo(() => {
 		if (!widgetsConfig) return;
+		fixPositions();
 		return DashboardService.calculateLayout(widgetsConfig, columns);
 	}, [columns, widgetsConfig]);
 
