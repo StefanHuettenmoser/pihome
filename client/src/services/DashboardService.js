@@ -9,13 +9,18 @@ const DashboardService = {
 				...getWidgetPlacement(widgetConfig, gridArray, n_columns),
 			});
 		});
+		widgetLayouts.sort((a, b) => a._id - b._id);
 		return widgetLayouts;
 	},
-	makeStyle: (widgetLayout) => {
+	makeStyle: (widgetLayout, cellDimension, gap) => {
 		const { row, column, height, width } = widgetLayout;
 		return {
-			gridRow: `${row + 1} / ${row + height + 1}`,
-			gridColumn: `${column + 1} / ${column + width + 1}`,
+			position: "absolute",
+			width: `${width * cellDimension.width - gap}px`,
+			height: `${height * cellDimension.height - gap}px`,
+			left: `${column * cellDimension.width + gap / 2}px`,
+			top: `${row * cellDimension.height + gap / 2}px`,
+			margin: `${gap / 2}px`,
 		};
 	},
 };

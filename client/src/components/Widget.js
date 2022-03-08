@@ -10,6 +10,8 @@ import useDebounce from "../hooks/useDebounce";
 
 const Widget = ({
 	widgetLayout,
+	cellDimension,
+	gap,
 	editMode,
 	move,
 	resize,
@@ -44,11 +46,13 @@ const Widget = ({
 		<div
 			style={{
 				...style,
-				...DashboardService.makeStyle(widgetLayout),
+				...DashboardService.makeStyle(widgetLayout, cellDimension, gap),
 				background: "white",
 				padding: "0.5em",
 				overflow: "hidden",
 				borderRadius: "5px",
+				transition:
+					"all 0.7s ease-in-out, width 0.4s ease-in-out, height 0.4s ease-in-out",
 			}}
 			{...props}
 		>
@@ -151,7 +155,7 @@ const Widget = ({
 								}}
 								onClick={() => deleteWidget(widgetLayout._id)}
 							>
-								Delete
+								Delete {widgetLayout._id}
 							</button>
 						</div>
 					</>
