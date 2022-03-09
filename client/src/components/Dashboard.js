@@ -3,7 +3,7 @@ import useResize from "../hooks/useResize";
 
 import useWidgets from "../hooks/useWidgets";
 
-import Widget from "./Widget";
+import Widget from "./widget/Widget";
 
 const Dashboard = ({ columns = 4, rowHeight = 120, gap = 10 }) => {
 	const [ref, width] = useResize();
