@@ -1,13 +1,16 @@
 import { useState, useMemo, useEffect, useCallback, useContext } from "react";
 
 import useREST from "./useREST";
+import useServer from "./useServer";
 
 import DashboardService from "../services/DashboardService";
+import UserWidgetService from "../services/UserWidgetService";
 import WidgetService from "../services/WidgetService";
 
 export default function useWidgets(columns) {
 	const [rawUserWidgets, _getOne, addOne, changeOne, deleteOne, update] =
-		useREST(WidgetService);
+		useREST(UserWidgetService);
+	const [widgets] = useServer(WidgetService.getAll);
 
 	const fixPositions = useCallback(() => {
 		rawUserWidgets.sort((a, b) => a.position - b.position);
@@ -106,5 +109,13 @@ export default function useWidgets(columns) {
 	// TODO: REMOVE
 	// TODO: ADD
 
-	return [userWidgets, move, resize, setArguments, addWidget, deleteWidget];
+	return [
+		userWidgets,
+		widgets,
+		move,
+		resize,
+		setArguments,
+		addWidget,
+		deleteWidget,
+	];
 }

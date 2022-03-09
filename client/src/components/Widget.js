@@ -9,6 +9,7 @@ import DataChart from "./charts/DataChart";
 import useDebounce from "../hooks/useDebounce";
 
 const Widget = ({
+	widgets,
 	userWidget,
 	cellDimension,
 	gap,
@@ -20,7 +21,6 @@ const Widget = ({
 	style = {},
 	...props
 }) => {
-	console.log(userWidget);
 	const { tableNames, getData, subscribe, unsubscribe } =
 		useContext(DataContext);
 	const [newHeight, setNewHeight] = useState(userWidget.height);
@@ -72,6 +72,21 @@ const Widget = ({
 					</Typography>
 				) : (
 					<>
+						{widgets && (
+							<select
+								key={`widget-dropdown-${userWidget._id}`}
+								value={userWidget.widget_id}
+							>
+								{widgets.map((widget) => (
+									<option
+										key={`widget-dropdown-${userWidget._id}-element-${widget._id}`}
+										value={widget._id}
+									>
+										{widget.widget_name}
+									</option>
+								))}
+							</select>
+						)}
 						<input
 							key={`${userWidget._id}-title-edit`}
 							type="text"
@@ -80,12 +95,14 @@ const Widget = ({
 						/>
 						{tableNames && (
 							<select
-								key={`widget-dropdown-${userWidget._id}`}
+								key={`data-dropdown-${userWidget._id}`}
 								onChange={(e) => handleSelect(e.target.value)}
 								value={userWidget.args.referenceTable}
 							>
 								{tableNames.map((tableName) => (
-									<option key={`widget-dropdown-element-${tableName}`}>
+									<option
+										key={`data-dropdown-${userWidget._id}-element-${tableName}`}
+									>
 										{tableName}
 									</option>
 								))}

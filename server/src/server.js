@@ -1,5 +1,6 @@
 // INITIALIZE
 // ================================================================================================
+require("./init_db")();
 
 const express = require("express");
 const app = express();
@@ -13,6 +14,8 @@ app.use(express.json());
 // load all routes form the routes folder
 const dataRouter = require("./routes/data");
 app.use("/api/v1/data", dataRouter);
+const userWidgetRouter = require("./routes/user_widget");
+app.use("/api/v1/user_widget", userWidgetRouter);
 const widgetRouter = require("./routes/widget");
 app.use("/api/v1/widget", widgetRouter);
 

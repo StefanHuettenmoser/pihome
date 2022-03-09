@@ -7,9 +7,16 @@ import Widget from "./Widget";
 
 const Dashboard = ({ columns = 4, rowHeight = 120, gap = 10 }) => {
 	const [ref, width] = useResize();
-	const [editMode, setEditMode] = useState(false);
-	const [userWidgets, move, resize, setArguments, addWidget, deleteWidget] =
-		useWidgets(columns);
+	const [editMode, setEditMode] = useState(true);
+	const [
+		userWidgets,
+		widgets,
+		move,
+		resize,
+		setArguments,
+		addWidget,
+		deleteWidget,
+	] = useWidgets(columns);
 	const handleEditModeChange = useCallback(
 		(e) => {
 			setEditMode(e.target.checked);
@@ -49,6 +56,7 @@ const Dashboard = ({ columns = 4, rowHeight = 120, gap = 10 }) => {
 						<Widget
 							key={`dashboard-widget-${userWidget._id}`}
 							userWidget={userWidget}
+							widgets={widgets}
 							cellDimension={cellDimension}
 							gap={gap}
 							editMode={editMode}
