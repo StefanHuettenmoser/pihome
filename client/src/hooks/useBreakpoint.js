@@ -18,7 +18,7 @@ const useBreakpoint = () => {
 	const { width } = useWindowResize();
 	const breakpoint = useMemo(() => {
 		return getBreakpoint(width, theme);
-	}, [width]);
+	}, [width, theme]);
 
 	return breakpoint;
 };

@@ -2,8 +2,15 @@ import React, { useState } from "react";
 
 import SelectWidget from "./SelectWidget";
 
-const EditBar = ({ userWidget, widgets, move, resize, deleteWidget }) => {
-	const [selectedWidget, setSelectedWidget] = useState(userWidget.widget_id);
+const EditBar = ({
+	userWidget,
+	widgets,
+	move,
+	resize,
+	deleteWidget,
+	selectedWidgetID,
+	setSelectedWidgetID,
+}) => {
 	const [height, setHeight] = useState(userWidget.height);
 	const [width, setWidth] = useState(userWidget.width);
 	const [show, setShow] = useState(true);
@@ -12,8 +19,8 @@ const EditBar = ({ userWidget, widgets, move, resize, deleteWidget }) => {
 			{widgets && (
 				<SelectWidget
 					widgets={widgets}
-					selectedWidget={selectedWidget}
-					setSelectedWidget={setSelectedWidget}
+					selectedWidgetID={selectedWidgetID}
+					setSelectedWidgetID={setSelectedWidgetID}
 				/>
 			)}
 			<div style={{ display: "flex" }}>

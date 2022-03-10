@@ -70,7 +70,7 @@ export default function DataContextProvider({
 		return () => {
 			clearInterval(interval);
 		};
-	}, [update]);
+	}, [update, interval_ms]);
 
 	return (
 		<DataContext.Provider

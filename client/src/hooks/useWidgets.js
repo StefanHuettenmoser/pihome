@@ -11,6 +11,7 @@ export default function useWidgets(columns) {
 	const [rawUserWidgets, _getOne, addOne, changeOne, deleteOne, update] =
 		useREST(UserWidgetService);
 	const [widgets] = useServer(WidgetService.getAll);
+	console.log(rawUserWidgets);
 
 	const fixPositions = useCallback(() => {
 		rawUserWidgets.sort((a, b) => a.position - b.position);
@@ -20,13 +21,13 @@ export default function useWidgets(columns) {
 			rawUserWidget.position = i;
 			changeOne(rawUserWidget._id, rawUserWidget);
 		});
-	}, [rawUserWidgets]);
+	}, [rawUserWidgets, changeOne]);
 
 	const userWidgets = useMemo(() => {
 		if (!rawUserWidgets) return;
 		fixPositions();
 		return DashboardService.calculateLayout(rawUserWidgets, columns);
-	}, [columns, rawUserWidgets]);
+	}, [columns, rawUserWidgets, fixPositions]);
 
 	const move = useCallback(
 		async (_id, step) => {
@@ -67,6 +68,16 @@ export default function useWidgets(columns) {
 			const changedWidget = rawUserWidgets[listIndex];
 			changedWidget.height = height;
 			changedWidget.width = width;
+			await changeOne(changedWidget._id, changedWidget);
+			await update();
+		},
+		[rawUserWidgets, changeOne, update]
+	);
+	const setWidgetID = useCallback(
+		async (_id, widget_id) => {
+			const listIndex = rawUserWidgets.map((e) => e._id).indexOf(_id);
+			const changedWidget = rawUserWidgets[listIndex];
+			changedWidget.widget_id = widget_id;
 			await changeOne(changedWidget._id, changedWidget);
 			await update();
 		},
@@ -115,6 +126,7 @@ export default function useWidgets(columns) {
 		move,
 		resize,
 		setArguments,
+		setWidgetID,
 		addWidget,
 		deleteWidget,
 	];

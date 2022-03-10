@@ -32,7 +32,7 @@ export default function DataChart({ data, ...props }) {
 	};
 	return (
 		<div ref={ref} {...props}>
-			{data && (
+			{data && height && width && (
 				<LineChart
 					data={data}
 					xValue={xValue}

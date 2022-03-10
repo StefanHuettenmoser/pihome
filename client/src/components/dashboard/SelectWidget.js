@@ -1,16 +1,15 @@
 import React, { useCallback } from "react";
 
-const SelectWidget = ({ widgets, selectedWidget, setSelectedWidget }) => {
+const SelectWidget = ({ widgets, selectedWidgetID, setSelectedWidgetID }) => {
 	const handleSelect = useCallback(
 		(_selectedWidget) => {
-			setSelectedWidget(_selectedWidget);
+			setSelectedWidgetID(_selectedWidget);
 		},
-		[setSelectedWidget]
+		[setSelectedWidgetID]
 	);
-	console.log(widgets);
 	return (
 		<select
-			value={selectedWidget}
+			value={selectedWidgetID}
 			onChange={(e) => handleSelect(e.target.value)}
 		>
 			{widgets.map((widget) => (

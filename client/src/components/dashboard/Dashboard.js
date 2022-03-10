@@ -1,9 +1,9 @@
 import React, { useState, useCallback, useMemo } from "react";
-import useResize from "../hooks/useResize";
+import useResize from "../../hooks/useResize";
 
-import useWidgets from "../hooks/useWidgets";
+import useWidgets from "../../hooks/useWidgets";
 
-import Widget from "./widget/Widget";
+import Widget from "./Widget";
 
 const Dashboard = ({ columns = 4, rowHeight = 120, gap = 10 }) => {
 	const [ref, width] = useResize();
@@ -14,6 +14,7 @@ const Dashboard = ({ columns = 4, rowHeight = 120, gap = 10 }) => {
 		move,
 		resize,
 		setArguments,
+		setWidgetID,
 		addWidget,
 		deleteWidget,
 	] = useWidgets(columns);
@@ -36,7 +37,7 @@ const Dashboard = ({ columns = 4, rowHeight = 120, gap = 10 }) => {
 					)
 				) +
 			2 * gap,
-		[userWidgets, rowHeight]
+		[userWidgets, rowHeight, gap]
 	);
 
 	return (
@@ -63,6 +64,7 @@ const Dashboard = ({ columns = 4, rowHeight = 120, gap = 10 }) => {
 							move={move}
 							resize={resize}
 							setArguments={setArguments}
+							setWidgetID={setWidgetID}
 							deleteWidget={deleteWidget}
 						/>
 					))}

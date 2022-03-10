@@ -4,7 +4,7 @@ import useTheme from "@mui/material/styles/useTheme";
 import useBreakpoint from "../hooks/useBreakpoint";
 
 import Container from "@mui/material/Container";
-import Dashboard from "../components/Dashboard";
+import Dashboard from "../components/dashboard/Dashboard";
 
 const columns = {
 	xs: 1,
