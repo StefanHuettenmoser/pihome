@@ -54,7 +54,7 @@ const DataWrapper = ({
 					)}
 				</>
 			)}
-			<>{data && Widget}</>
+			<>{data?.length > 0 ? Widget : <div>No Data...</div>}</>
 		</>
 	);
 };
