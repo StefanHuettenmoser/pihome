@@ -11,7 +11,6 @@ export default function useWidgets(columns) {
 	const [rawUserWidgets, _getOne, addOne, changeOne, deleteOne, update] =
 		useREST(UserWidgetService);
 	const [widgets] = useServer(WidgetService.getAll);
-	console.log(rawUserWidgets);
 
 	const fixPositions = useCallback(() => {
 		rawUserWidgets.sort((a, b) => a.position - b.position);
@@ -87,9 +86,7 @@ export default function useWidgets(columns) {
 	const setArguments = useCallback(
 		async (_id, args) => {
 			const listIndex = rawUserWidgets.map((e) => e._id).indexOf(_id);
-			console.log("Found @", listIndex);
 			const changedWidget = rawUserWidgets[listIndex];
-			console.log(changedWidget);
 			changedWidget.args = { ...changedWidget.args, ...args };
 			await changeOne(changedWidget._id, changedWidget);
 			await update();

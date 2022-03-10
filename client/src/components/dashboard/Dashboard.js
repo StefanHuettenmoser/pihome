@@ -7,7 +7,9 @@ import Widget from "./Widget";
 
 const Dashboard = ({ columns = 4, rowHeight = 120, gap = 10 }) => {
 	const [ref, width] = useResize();
-	const [editMode, setEditMode] = useState(true);
+	const [editMode, setEditMode] = useState(
+		process.env.REACT_APP_ENV !== "production"
+	);
 	const [
 		userWidgets,
 		widgets,
