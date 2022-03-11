@@ -36,3 +36,35 @@
 .no-fill {
 	fill: none;
 }
+
+.line-group-0 {
+	stroke: blue;
+}
+.line-group-1 {
+	stroke: red;
+}
+.line-group-2 {
+	stroke: green;
+}
+.line-group-3 {
+	stroke: orange;
+}
+.line-group-4 {
+	stroke: cyan;
+}
+
+.fill-group-0 {
+	fill: blue;
+}
+.fill-group-1 {
+	fill: red;
+}
+.fill-group-2 {
+	fill: green;
+}
+.fill-group-3 {
+	fill: orange;
+}
+.fill-group-4 {
+	fill: cyan;
+}

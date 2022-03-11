@@ -21,18 +21,18 @@ const LineChart = ({ data }) => {
 
 const LineChartWrapper = ({ userWidget, setArguments, editMode }) => {
 	return (
-		<TitleWidgetWrapper
-			key={`Widget-LineChart-${userWidget._id}-title-wrapper`}
+		<DataWidgetWrapper
+			key={`Widget-LineChart-${userWidget._id}-data-wrapper`}
 			userWidget={userWidget}
 			setArguments={setArguments}
 			editMode={editMode}
 		>
-			<DataWidgetWrapper
-				key={`Widget-LineChart-${userWidget._id}-data-wrapper`}
+			<TitleWidgetWrapper
+				key={`Widget-LineChart-${userWidget._id}-title-wrapper`}
 			>
 				<LineChart />
-			</DataWidgetWrapper>
-		</TitleWidgetWrapper>
+			</TitleWidgetWrapper>
+		</DataWidgetWrapper>
 	);
 };
 

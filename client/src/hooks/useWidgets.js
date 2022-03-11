@@ -102,7 +102,7 @@ export default function useWidgets(columns) {
 		const width = 1;
 		const height = 1;
 		const widget_id = 1;
-		const args = { referenceTable: "", title: "New Widget" };
+		const args = { referenceTable: [], title: "New Widget" };
 		await addOne({ position, width, height, widget_id, args });
 		await update();
 	}, [rawUserWidgets, addOne, update]);

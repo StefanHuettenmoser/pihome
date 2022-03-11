@@ -5,19 +5,22 @@ import React, { useMemo } from "react";
 import { extent, scaleLinear, scaleTime } from "d3";
 
 import { AxisLinearLeft, AxisLinearBottom } from "../axis/AxisLinear";
-import Line from "../components/Line";
 
-export default function LineChart({
+import Line from "../components/Line";
+import Legend from "../components/Legend";
+
+export default function MultiLineChart({
 	data,
 	xValue,
 	yValue,
+	groupValue,
+	dataValue,
 	dimensions,
 	yDomain,
 	axisLabelYFormat,
 	axisLabelXFormat,
 	axisTitleX,
 	smooth,
-	filled,
 	showPoints,
 }) {
 	const innerWidth = useMemo(
@@ -28,21 +31,29 @@ export default function LineChart({
 		() => dimensions.height - dimensions.margin.top - dimensions.margin.bottom,
 		[dimensions]
 	);
-
+	const flatData = useMemo(
+		() =>
+			data.reduce((prev, curr) => {
+				const rawData = dataValue(curr);
+				if (!rawData) return prev;
+				return [...prev, ...dataValue(curr)];
+			}, []),
+		[data, dataValue] // FIXME: dataValue should be callback function!
+	);
 	const xScale = useMemo(
-		() => scaleTime().domain(extent(data, xValue)).range([0, innerWidth]),
-		[data, xValue, innerWidth]
+		() => scaleTime().domain(extent(flatData, xValue)).range([0, innerWidth]),
+		[flatData, xValue, innerWidth]
 	);
 
 	const yScale = useMemo(
 		() =>
 			scaleLinear()
-				.domain(yDomain || extent(data, yValue))
+				.domain(yDomain || extent(flatData, yValue))
 				.range([0, innerHeight]),
-		[yDomain, data, yValue, innerHeight]
+		[yDomain, flatData, yValue, innerHeight]
 	);
 
-	if (data.length === 0) return null;
+	if (flatData.length === 0) return null;
 	return (
 		<svg width={dimensions.width} height={dimensions.height}>
 			<g
@@ -67,19 +78,31 @@ export default function LineChart({
 					axisLabelFormat={axisLabelXFormat}
 					className={`${styles["axis-label"]} ${styles["gridline-light"]}`}
 				/>
-				<Line
-					key={`line-chart-${axisTitleX}-line`}
+				{data.map(
+					(d, i) =>
+						dataValue(d) && (
+							<Line
+								key={`line-chart-${axisTitleX}-line-${groupValue(d)}`}
+								data={dataValue(d)}
+								xScale={xScale}
+								yScale={yScale}
+								xValue={xValue}
+								yValue={yValue}
+								height={innerHeight}
+								className={`${styles["no-fill"]} ${styles.line} ${
+									styles["line-primary"]
+								} ${styles[`line-group-${i % 5}`]}`}
+								showPoints={showPoints}
+								smooth={smooth}
+							/>
+						)
+				)}
+				<Legend
 					data={data}
-					xScale={xScale}
-					yScale={yScale}
-					xValue={xValue}
-					yValue={yValue}
-					height={innerHeight}
-					className={`${filled ? styles["primary"] : styles["no-fill"]} ${
-						styles.line
-					} ${filled ? styles["line-secondary"] : styles["line-primary"]}`}
-					showPoints={showPoints}
-					smooth={smooth}
+					dataValue={dataValue}
+					groupValue={groupValue}
+					containerHeight={innerHeight}
+					containerWidth={innerWidth}
 				/>
 			</g>
 		</svg>

@@ -4,7 +4,7 @@ import useResize from "../../hooks/useResize";
 
 import { formatDate } from "../../services/helpers/dateUtils";
 
-import LineChart from "./layouts/LineChart";
+import MultiLineChart from "./layouts/MultiLineChart";
 
 export default function DataChart({ data, ...props }) {
 	const [ref, width, height] = useResize();
@@ -14,11 +14,13 @@ export default function DataChart({ data, ...props }) {
 		return {
 			width: width,
 			height: height,
-			margin: { top: 20, right: 20, bottom: 40, left: 60 },
+			margin: { top: 40, right: 10, bottom: 20, left: 35 },
 		};
 	}, [width, height]);
 	const xValue = useCallback((d) => new Date(d.Time), []);
 	const yValue = useCallback((d) => d.Value, []);
+	const dataValue = useCallback((d) => d.data, []);
+	const groupValue = useCallback((d) => d.tableName, []);
 	const axisLabelDateFormat = (tick_label) => {
 		const duration =
 			Math.max(...data.map(xValue)) - Math.min(...data.map(xValue));
@@ -33,10 +35,12 @@ export default function DataChart({ data, ...props }) {
 	return (
 		<div ref={ref} {...props}>
 			{data && height && width && (
-				<LineChart
+				<MultiLineChart
 					data={data}
 					xValue={xValue}
 					yValue={yValue}
+					dataValue={dataValue}
+					groupValue={groupValue}
 					dimensions={dimensions}
 					yDomain={undefined}
 					axisLabelYFormat={undefined}

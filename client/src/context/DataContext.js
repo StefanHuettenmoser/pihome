@@ -35,13 +35,14 @@ export default function DataContextProvider({
 	}, [subscriptions]);
 
 	const subscribe = useCallback(
-		(tableName) => {
-			if (!tableName) return;
-			setSubscriptions((prev) => [...prev, tableName]);
+		(tableNames) => {
+			if (!tableNames) return;
+			setSubscriptions((prev) => [...prev, ...tableNames]);
 		},
 		[setSubscriptions]
 	);
-	const unsubscribe = useCallback(
+
+	const unsubscribeOne = useCallback(
 		(tableName) => {
 			if (!tableName) return;
 			setSubscriptions((prev) => {
@@ -56,9 +57,22 @@ export default function DataContextProvider({
 		},
 		[setSubscriptions]
 	);
+	const unsubscribe = useCallback(
+		(tableNames) => {
+			tableNames.forEach((tableName) => unsubscribeOne(tableName));
+		},
+		[unsubscribeOne]
+	);
 	const getData = useCallback(
-		(tableName) => {
-			return dataCollection[tableName];
+		(tableNames) => {
+			if (!tableNames) return;
+			return tableNames.reduce((prev, tableName) => {
+				prev.push({
+					tableName,
+					data: dataCollection[tableName],
+				});
+				return prev;
+			}, []);
 		},
 		[dataCollection]
 	);

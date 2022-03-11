@@ -2,6 +2,9 @@ import React, { useContext, useCallback, useEffect, cloneElement } from "react";
 
 import { DataContext } from "../../../../context/DataContext";
 
+import Select from "../../../Select";
+import OutlinedInput from "@mui/material/OutlinedInput";
+
 const DataWrapper = ({
 	userWidget,
 	setArguments,
@@ -11,12 +14,22 @@ const DataWrapper = ({
 }) => {
 	const { tableNames, getData, subscribe, unsubscribe } =
 		useContext(DataContext);
-
+	if (
+		userWidget.args.referenceTable &&
+		typeof userWidget.args.referenceTable !== "object"
+	) {
+		console.warn("Update widget from previous version config");
+		setArguments(userWidget._id, {
+			referenceTable: [userWidget.args.referenceTable],
+		});
+	}
 	const handleSelect = useCallback(
-		(tableName) => {
-			if (userWidget.args.referenceTable !== tableName) {
-				setArguments(userWidget._id, { referenceTable: tableName });
-			}
+		(selectedTableNames) => {
+			// TODO: 1: filter: accept only if tableNames.includes(tableName)
+			if (userWidget.args.referenceTable.length === selectedTableNames.length)
+				return;
+			// TODO: 2: check if length is same and all elements are included
+			setArguments(userWidget._id, { referenceTable: selectedTableNames });
 		},
 		[setArguments, userWidget._id, userWidget.args.referenceTable]
 	);
@@ -38,19 +51,17 @@ const DataWrapper = ({
 			{editMode && (
 				<>
 					{tableNames && (
-						<select
-							key={`data-dropdown-${userWidget._id}`}
-							onChange={(e) => handleSelect(e.target.value)}
+						<Select
+							name={`select-data-${userWidget._id}`}
+							label="Select Data"
+							data={tableNames}
+							getValue={(d) => d}
+							getName={(d) => d}
 							value={userWidget.args.referenceTable}
-						>
-							{tableNames.map((tableName) => (
-								<option
-									key={`data-dropdown-${userWidget._id}-element-${tableName}`}
-								>
-									{tableName}
-								</option>
-							))}
-						</select>
+							onChange={(e) => handleSelect(e.target.value)}
+							multiple
+							input={<OutlinedInput label="Name" />}
+						/>
 					)}
 				</>
 			)}

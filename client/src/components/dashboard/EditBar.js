@@ -1,29 +1,22 @@
 import React, { useState } from "react";
 
-import SelectWidget from "./SelectWidget";
-
-const EditBar = ({
-	userWidget,
-	widgets,
-	move,
-	resize,
-	deleteWidget,
-	selectedWidgetID,
-	setSelectedWidgetID,
-}) => {
+const EditBar = ({ userWidget, move, resize, deleteWidget }) => {
 	const [height, setHeight] = useState(userWidget.height);
 	const [width, setWidth] = useState(userWidget.width);
 	const [show, setShow] = useState(true);
 	return show ? (
 		<>
-			{widgets && (
-				<SelectWidget
-					widgets={widgets}
-					selectedWidgetID={selectedWidgetID}
-					setSelectedWidgetID={setSelectedWidgetID}
-				/>
-			)}
-			<div style={{ display: "flex" }}>
+			<div
+				style={{
+					position: "absolute",
+					bottom: 0,
+					display: "flex",
+					background: "rgba(255,255,255,0.9)",
+					padding: "0.5em",
+					width: "100%",
+					zIndex: 1,
+				}}
+			>
 				<button
 					key={`${userWidget._id}-button-back`}
 					onClick={() => move(userWidget._id, -1)}

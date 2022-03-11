@@ -2,9 +2,14 @@ import React, { useState, useEffect, useMemo } from "react";
 
 import DashboardService from "../../services/DashboardService";
 
+import Card from "@mui/material/Card";
+import CardContent from "@mui/material/CardContent";
+
 import EditBar from "./EditBar";
 import NumericMetric from "./widgets/NumericMetric";
 import LineChart from "./widgets/LineChart";
+
+import Select from "../Select";
 
 const widgetSwitch = {
 	NumericMetric,
@@ -37,40 +42,43 @@ const Widget = ({
 			setWidgetID(userWidget._id, selectedWidgetID);
 		}
 	}, [selectedWidgetID, userWidget._id, userWidget.widget_id, setWidgetID]);
+
 	return (
-		<div
-			style={{
+		<Card
+			sx={{
 				...style,
 				...DashboardService.makeStyle(userWidget, cellDimension, gap),
-				background: "white",
-				padding: "0.5em",
+				display: "flex",
+				flexDirection: "column",
 				overflow: "hidden",
-				borderRadius: "5px",
 				transition:
-					"all 0.7s ease-in-out, width 0.4s ease-in-out, height 0.4s ease-in-out",
+					"all 0.5s ease-in-out, width 0.4s ease-in-out, height 0.4s ease-in-out",
 			}}
 			{...props}
 		>
-			<div
+			{widgets && editMode && (
+				<Select
+					name="SelectWidget"
+					data={widgets}
+					label="Widget Type"
+					getValue={(d) => d._id}
+					getName={(d) => d.widget_name}
+					value={selectedWidgetID}
+					onChange={(e) => setSelectedWidgetID(e.target.value)}
+					fullWidth
+					variant="standard"
+				/>
+			)}
+			<CardContent
 				key={`widget-container-${userWidget._id}`}
 				style={{
-					height: "100%",
+					height: 0,
+					flexGrow: 1,
 					width: "100%",
 					display: "flex",
 					flexDirection: "column",
 				}}
 			>
-				{editMode && userWidget && (
-					<EditBar
-						userWidget={userWidget}
-						widgets={widgets}
-						move={move}
-						resize={resize}
-						deleteWidget={deleteWidget}
-						selectedWidgetID={selectedWidgetID}
-						setSelectedWidgetID={setSelectedWidgetID}
-					/>
-				)}
 				{WidgetContent && (
 					<WidgetContent
 						key={`Widget-${userWidget._id}`}
@@ -79,8 +87,16 @@ const Widget = ({
 						editMode={editMode}
 					/>
 				)}
-			</div>
-		</div>
+			</CardContent>
+			{editMode && userWidget && (
+				<EditBar
+					userWidget={userWidget}
+					move={move}
+					resize={resize}
+					deleteWidget={deleteWidget}
+				/>
+			)}
+		</Card>
 	);
 };
 
