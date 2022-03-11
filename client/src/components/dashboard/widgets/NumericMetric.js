@@ -25,7 +25,8 @@ const NumericMetric = ({ data }) => {
 		_data.sort((a, b) => a.dt - b.dt);
 		return _data[0].Value;
 	}, [_data]);
-	const dataString = dataPoint % 1 === 0 ? dataPoint : dataPoint.toPrecision(3);
+	const dataString =
+		dataPoint % 1 === 0 ? dataPoint : dataPoint?.toPrecision(3);
 	return (
 		<div
 			style={{
