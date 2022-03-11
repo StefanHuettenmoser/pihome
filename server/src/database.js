@@ -5,8 +5,9 @@ const config = require("../config/pihome.json");
 const mysql = require("mysql2");
 
 const pool = mysql.createPool({
-	host: "localhost",
-	user: "root",
+	host: config.db.host,
+	user: config.db.user,
+	port: config.db.port || 3306,
 	password: config.db.password,
 	database: config.db.database,
 	connectionLimit: 10,

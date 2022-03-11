@@ -15,7 +15,7 @@ export default function useServer(
 		if (message?.msgError) console.log(message);
 		const resolvedData = handleData ? handleData(data) : data;
 		setData(resolvedData);
-	}, [setData, serverPromiseFunction, args, handleData, skip]);
+	}, [setData, serverPromiseFunction, args, handleData, skip, initialValue]);
 
 	useEffect(() => {
 		updateData();

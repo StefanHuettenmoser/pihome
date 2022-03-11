@@ -7,6 +7,7 @@ dist
 .DS_Store
 .env*
 *.rest
+bsec_iaq.state
 
 node_modules
 
