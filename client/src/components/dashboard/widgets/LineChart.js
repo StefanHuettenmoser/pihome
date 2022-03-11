@@ -26,6 +26,7 @@ const LineChartWrapper = ({ userWidget, setArguments, editMode }) => {
 			userWidget={userWidget}
 			setArguments={setArguments}
 			editMode={editMode}
+			multiple
 		>
 			<TitleWidgetWrapper
 				key={`Widget-LineChart-${userWidget._id}-title-wrapper`}

@@ -37,7 +37,7 @@ const NumericMetric = ({ data }) => {
 			}}
 		>
 			<Typography variant="h1">{dataPoint}</Typography>
-			<Typography>Δ/h: {regression?.slope?.toFixed(3)}</Typography>
+			<Typography>Δ/h: {regression?.slope?.toPrecision(3)}</Typography>
 		</div>
 	);
 };

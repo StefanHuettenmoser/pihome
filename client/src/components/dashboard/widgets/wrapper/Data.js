@@ -9,20 +9,12 @@ const DataWrapper = ({
 	userWidget,
 	setArguments,
 	editMode,
+	multiple,
 	children,
 	...props
 }) => {
 	const { tableNames, getData, subscribe, unsubscribe } =
 		useContext(DataContext);
-	if (
-		userWidget.args.referenceTable &&
-		typeof userWidget.args.referenceTable !== "object"
-	) {
-		console.warn("Update widget from previous version config");
-		setArguments(userWidget._id, {
-			referenceTable: [userWidget.args.referenceTable],
-		});
-	}
 	const handleSelect = useCallback(
 		(selectedTableNames) => {
 			// TODO: 1: filter: accept only if tableNames.includes(tableName)
@@ -59,7 +51,7 @@ const DataWrapper = ({
 							getName={(d) => d}
 							value={userWidget.args.referenceTable}
 							onChange={(e) => handleSelect(e.target.value)}
-							multiple
+							multiple={multiple}
 							input={<OutlinedInput label="Name" />}
 						/>
 					)}

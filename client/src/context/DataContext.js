@@ -37,6 +37,7 @@ export default function DataContextProvider({
 	const subscribe = useCallback(
 		(tableNames) => {
 			if (!tableNames) return;
+			if (typeof tableNames !== "object") tableNames = [tableNames];
 			setSubscriptions((prev) => [...prev, ...tableNames]);
 		},
 		[setSubscriptions]
@@ -59,6 +60,7 @@ export default function DataContextProvider({
 	);
 	const unsubscribe = useCallback(
 		(tableNames) => {
+			if (typeof tableNames !== "object") tableNames = [tableNames];
 			tableNames.forEach((tableName) => unsubscribeOne(tableName));
 		},
 		[unsubscribeOne]
@@ -66,6 +68,7 @@ export default function DataContextProvider({
 	const getData = useCallback(
 		(tableNames) => {
 			if (!tableNames) return;
+			if (typeof tableNames !== "object") tableNames = [tableNames];
 			return tableNames.reduce((prev, tableName) => {
 				prev.push({
 					tableName,

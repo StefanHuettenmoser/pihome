@@ -11,7 +11,7 @@ const columns = {
 	sm: 1,
 	md: 2,
 	lg: 4,
-	xl: 6,
+	xl: 8,
 };
 
 const Home = () => {
@@ -20,6 +20,7 @@ const Home = () => {
 	return (
 		<Container
 			key="home-container"
+			maxWidth="xl"
 			sx={{ background: theme.palette.grey.A100, py: 3 }}
 		>
 			<Dashboard key="home-dashboard" columns={columns[breakpoint]} />
