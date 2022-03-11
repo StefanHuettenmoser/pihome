@@ -10,7 +10,7 @@ const NumericMetric = ({ data }) => {
 	const _data = data?.[0].data;
 	const regression = useMemo(() => {
 		if (!_data) return;
-		linearRegression(
+		return linearRegression(
 			_data,
 			(d) => +new Date(d.Time) / (1000 * 60 * 60),
 			(d) => d.Value
@@ -25,7 +25,7 @@ const NumericMetric = ({ data }) => {
 		_data.sort((a, b) => a.dt - b.dt);
 		return _data[0].Value;
 	}, [_data]);
-
+	const dataString = dataPoint % 1 === 0 ? dataPoint : dataPoint.toPrecision(3);
 	return (
 		<div
 			style={{
@@ -36,8 +36,8 @@ const NumericMetric = ({ data }) => {
 				height: "100%",
 			}}
 		>
-			<Typography variant="h1">{dataPoint}</Typography>
-			<Typography>Δ/h: {regression?.slope?.toPrecision(3)}</Typography>
+			<Typography variant="h1">{dataString}</Typography>
+			<Typography>Δ/h: {regression?.slope?.toPrecision(2)}</Typography>
 		</div>
 	);
 };

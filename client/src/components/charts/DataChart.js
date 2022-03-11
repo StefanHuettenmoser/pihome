@@ -14,14 +14,14 @@ export default function DataChart({ data, ...props }) {
 		return {
 			width: width,
 			height: height,
-			margin: { top: 40, right: 10, bottom: 20, left: 35 },
+			margin: { top: 40, right: 10, bottom: 20, left: 45 },
 		};
 	}, [width, height]);
 	const xValue = useCallback((d) => new Date(d.Time), []);
 	const yValue = useCallback((d) => d.Value, []);
 	const dataValue = useCallback((d) => d.data, []);
 	const groupValue = useCallback((d) => d.tableName, []);
-	const axisLabelDateFormat = (tick_label) => {
+	const axisLabelDateFormat = (tickLabel) => {
 		const duration =
 			Math.max(...data.map(xValue)) - Math.min(...data.map(xValue));
 		let format = "%m.%Y";
@@ -30,8 +30,10 @@ export default function DataChart({ data, ...props }) {
 		} else if (duration < 1000 * 60 * 60 * 24 * 31 * 4) {
 			format = "%d.%m.";
 		}
-		return formatDate(new Date(tick_label), format);
+		return formatDate(new Date(tickLabel), format);
 	};
+	const axisLabelUnitFormat = (tickLabel) =>
+		+tickLabel % 1 === 0 ? tickLabel : +tickLabel.toPrecision(4);
 	return (
 		<div ref={ref} {...props}>
 			{data && height && width && (
@@ -43,7 +45,7 @@ export default function DataChart({ data, ...props }) {
 					groupValue={groupValue}
 					dimensions={dimensions}
 					yDomain={undefined}
-					axisLabelYFormat={undefined}
+					axisLabelYFormat={axisLabelUnitFormat}
 					axisLabelXFormat={axisLabelDateFormat}
 					axisTitleX={"Test Chart"}
 					smooth
